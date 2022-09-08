@@ -1,0 +1,145 @@
+.minder_wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid red;
+  .minder_header {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    // height: 54px;
+    padding: 10px 32px;
+    color: #262626;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+    .header_left {
+      :global {
+        .icon-tuichu {
+          margin-right: 16px;
+          font-size: 18px;
+          cursor: pointer;
+        }
+      }
+      .title {
+        padding-left: 16px;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;
+        border-left: 1px solid #e5e5e5;
+      }
+      .save_tip {
+        display: inline-block;
+        margin-left: 12px;
+        color: #bfbfbf;
+        font-size: 12px;
+        :global {
+          .icon-baocunzhuangtai {
+            margin-right: 4px;
+            color: #bfbfbf;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+    .header_mid {
+      display: inline-flex;
+      flex: 1;
+      justify-content: center;
+      ul {
+        margin-bottom: 0;
+        list-style-type: none;
+        li {
+          float: left;
+          padding: 0 8px;
+          font-size: 16px;
+          cursor: pointer;
+          &:nth-child(2n) {
+            border-right: 1px solid #e5e5e5;
+          }
+          &:last-child {
+            border-right: 1px solid #e5e5e5;
+          }
+        }
+      }
+      .zoom {
+        display: inline-flex;
+        margin-left: 16px;
+        span {
+          margin: 0 8px;
+        }
+        :global {
+          .iconfont {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .header_right {
+      margin-left: auto;
+      :global {
+        .ant-btn {
+          margin-right: 16px;
+        }
+      }
+      .export {
+        display: inline-block;
+        padding-left: 16px;
+        border-left: 1px solid #e5e5e5;
+        :global {
+          .iconfont {
+            margin: 8px;
+            font-size: 16px;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+  .minder_content {
+    position: relative;
+    flex: 1;
+    .tagDraw {
+      border: 1px solid green;
+      :global {
+        .ant-drawer-header-title {
+          .ant-drawer-close {
+            position: absolute;
+            right: 0;
+          }
+        }
+        .ant-drawer-body {
+          display: flex;
+          flex-direction: column;
+          padding: 16px;
+        }
+      }
+
+      .tagDraw_list {
+        flex: 1;
+        padding-top: 16px;
+        overflow-y: auto;
+        .tagDraw_item {
+          float: left;
+          margin-right: 12px;
+          margin-bottom: 12px;
+          padding: 4px 12px;
+          color: #262626;
+          font-weight: 400;
+          line-height: 22px;
+          background-color: #f1f1f4;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .tagDraw_item_tag {
+          background-color: #fff;
+          border: 1px solid #bfbfbf;
+        }
+        .tagDraw_item_disabled {
+          color: #bfbfbf;
+          cursor: default;
+        }
+      }
+    }
+  }
+}
