@@ -46,10 +46,8 @@
       display: inline-flex;
       flex: 1;
       justify-content: center;
-      ul {
-        margin-bottom: 0;
-        list-style-type: none;
-        li {
+      .opeator {
+        i {
           float: left;
           padding: 0 8px;
           font-size: 16px;
@@ -99,6 +97,70 @@
   .minder_content {
     position: relative;
     flex: 1;
+    border: 1px solid hotpink;
+
+    .contentbox {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .lev_popover {
+      position: absolute;
+      bottom: 32px;
+      left: 32px;
+      width: 72px;
+      height: 180px;
+      margin: 0;
+      padding: 10px 12px;
+      list-style-type: none;
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.1);
+      li {
+        margin: 2px 0;
+        line-height: 20px;
+        cursor: pointer;
+        span {
+          &:first-child {
+            display: inline-block;
+            width: 16px;
+            height: 6px;
+            line-height: 22px;
+            border-radius: 4px;
+          }
+          &:last-child {
+            float: right;
+            color: #262626;
+            font-weight: 400;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .camand_popover {
+      position: absolute;
+      right: 28px;
+      bottom: 30px;
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      background: #ffffff;
+      border: 1px solid #f1f1f4;
+      border-radius: 17px;
+      box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      :global {
+        .icon-wenjuan {
+          color: #262626;
+          font-size: 14px;
+        }
+      }
+    }
+
     .tagDraw {
       border: 1px solid green;
       :global {
@@ -141,5 +203,63 @@
         }
       }
     }
+
+    .commandDraw {
+      .commandDraw_ul {
+        padding: 0;
+        list-style: none;
+        .commandDraw_item {
+          padding: 16px 0;
+          border-bottom: 1px solid #e5e5e5;
+          .command_item_basic {
+            display: inline-block;
+            color: #262626;
+            :global {
+              .iconfont {
+                margin-right: 10px;
+                font-size: 16px;
+              }
+            }
+          }
+          .command_item_kyes {
+            float: right;
+            span {
+              padding: 4px;
+              background: #f1f1f4;
+              border-radius: 2px;
+            }
+            .keys_plus {
+              margin: 0 4px;
+              color: #626262;
+              font-weight: bold;
+              background: #fff;
+            }
+          }
+        }
+        .commandDraw_title {
+          color: #8c8c8c;
+          font-weight: 400;
+          font-size: 12px;
+          line-height: 12px;
+        }
+      }
+    }
+  }
+}
+
+.commandKey_popover {
+  p {
+    margin-bottom: 0;
+    color: #262626;
+    font-weight: 400;
+    line-height: 22px;
+    text-align: center;
+    &:last-child {
+      color: #8c8c8c;
+    }
+  }
+  .keys_plus {
+    margin: 0 4px;
+    color: #626262;
   }
 }

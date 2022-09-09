@@ -9,6 +9,7 @@ import { Button, Col, Dropdown, Menu, Row, Select, Space, Input } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import { saveAs } from "file-saver";
 import EditNode from "../../component/Editor/index";
+import CommandDraw from "./commandDraw";
 import styles from "../index.module.less";
 
 const { Search } = Input;
@@ -121,6 +122,16 @@ const templateList = [
     label: "鱼骨头图",
     value: "fish-bone",
   },
+];
+
+const leveColors = [
+  "rgba(101,120,155,0.2)",
+  "rgba(255,136,0,0.2)",
+  "rgba(114,46,209,0.2)",
+  "rgba(246,60,162,0.2)",
+  "rgba(22,93,255,0.2)",
+  "rgba(255,51,51,0.2)",
+  "rgba(241,241,244,1)",
 ];
 
 type PropsType = OptionsType & {};
@@ -388,8 +399,8 @@ const Minder: React.FC<PropsType> = ({
   // };
   console.log(km, "vv");
 
-  return (
-    <div className={styles.minder_containter}>
+  const opeatorArea = (
+    <div>
       <Row>
         <Col>
           模板：
@@ -485,8 +496,13 @@ const Minder: React.FC<PropsType> = ({
           />
         </Col> */}
       </Row>
+    </div>
+  );
 
-      <div className="contentbox">
+  return (
+    <div className={styles.minder_containter}>
+      <div className={styles.contentbox}>
+        {/* {opeatorArea} */}
         <div
           ref={kityRef}
           type="application/kityminder"
@@ -494,6 +510,15 @@ const Minder: React.FC<PropsType> = ({
           style={{ height: "100%" }}
         ></div>
         <EditNode minder={km} canEdit />
+        <ul className={styles.lev_popover}>
+          {leveColors.map((background, index) => (
+            <li>
+              <span style={{ background }} />
+              <span>{index + 1}级</span>
+            </li>
+          ))}
+        </ul>
+        <CommandDraw />
       </div>
     </div>
   );

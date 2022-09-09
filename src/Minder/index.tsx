@@ -7,7 +7,7 @@ import styles from "./index.module.less";
 type PropsType = {};
 const MinderPage: React.FC<PropsType> = () => {
   const title = `业务视角名称1`;
-  const [tagShow, SetTagShow] = useState(true);
+  const [tagShow, SetTagShow] = useState(false);
   const tagList = [
     {
       value: 1,
@@ -38,7 +38,7 @@ const MinderPage: React.FC<PropsType> = () => {
         exportData={function (type: "data" | "img"): void {
           throw new Error("Function not implemented.");
         }}
-        excomand={function (key: string): void {
+        excomand={function (key: any): void {
           throw new Error("Function not implemented.");
         }}
       />
