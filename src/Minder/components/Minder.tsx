@@ -11,7 +11,7 @@ import {
 } from "react";
 import React from "react";
 import { OptionsType } from "../edit";
-import { Button, Col, Row } from "antd";
+import { Button, Col, Row, message } from "antd";
 import { saveAs } from "file-saver";
 import EditNode from "../../component/Editor/index";
 import CommandDraw from "./commandDraw";
@@ -30,10 +30,17 @@ const leveColors = [
 type PropsType = OptionsType & {
   data: object;
   readonly?: boolean;
+  zoomChange?: (zoom) => void;
 };
 
 const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
-  const { theme = "normal", template = "normal", readonly, data } = props;
+  const {
+    theme = "normal",
+    template = "normal",
+    readonly,
+    data,
+    zoomChange,
+  } = props;
   console.log(data, ref, "ccccc");
   const kityRef = useRef(null);
   const [km, SetMinder] = useState();
@@ -205,8 +212,63 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     </div>
   );
 
+  // 一些事件监听
+  useEffect(() => {
+    if (km) {
+      // 放大缩小
+      km.on("zoom", (e) => {
+        zoomChange(e.zoom);
+      });
+      // 执行命令前
+      km.on("beforeExecCommand", (e) => {
+        console.log(e, "beforeExecCommand");
+      });
+      // 执行命令测试
+      km.on("execCommandTest", (e) => {
+        // 这里做一些判断 通过后继续执行指令
+        const { commandName, commandArgs } = e;
+        const currentNode = km.getSelectedNode();
+        const shouldStopPropagation = () => true; // 用于终止操作
+
+        console.log(e, "execCommandTest", currentNode);
+        // 插入父，子节点
+        if ("appendchildnode" === commandName) {
+          if (currentNode.id) {
+            message.warning("不可添加子节点");
+            e.shouldStopPropagation = shouldStopPropagation;
+          }
+
+          if (currentNode.level === 7) {
+            message.warning("超出层级限制");
+            e.shouldStopPropagation = shouldStopPropagation;
+          }
+        }
+
+        // 移动节点
+        if ("movetoparent" === commandName) {
+          message.warning("不可移动到此节点下");
+          e.shouldStopPropagation = shouldStopPropagation;
+        }
+
+        // 移动节点
+        if ("removenode" === commandName) {
+          message.warning("不可添加子节点");
+          e.shouldStopPropagation = shouldStopPropagation;
+        }
+        return e;
+      });
+    }
+    return () => {
+      if (km) {
+        km.off("zoom");
+        km.off("execCommandTest");
+      }
+    };
+  }, [km]);
+
   useImperativeHandle(ref, () => ({
     exportFn,
+    editeorComand,
     getTreeData: () => {
       return km.exportJson();
     },
@@ -226,9 +288,21 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
           style={{ height: "100%" }}
         ></div>
         <EditNode minder={km} canEdit={!readonly} />
-        <ul className={styles.lev_popover}>
+        <ul
+          className={styles.lev_popover}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
           {leveColors.map((background, index) => (
-            <li onClick={() => editeorComand("ExpandToLevel", index)}>
+            <li
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                editeorComand("ExpandToLevel", index);
+              }}
+            >
               <span style={{ background }} />
               <span>{index + 1}级</span>
             </li>

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { getKeyCode, isInputValue, isIntendToInput } from "./utils";
 import InputBox from "./InputBox";
 import "./index.css";
+import { message } from "antd";
 
 type PropsType = {
   appendKey: any;
@@ -95,9 +96,6 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
     const dblclickHandler = edit;
     const keydownName = "keydown";
     const selectionchangeName = "selectionchange";
-    const beforeExecCommandName = "beforeExecCommand";
-    const afterExecCommandName = "afterExecCommand";
-    const addNodeCommands = ["appendsiblingnode"];
 
     const keydownHandler = (e) => {
       if (isIntendToInput(e.originEvent) && minder.getSelectedNode()) {
@@ -108,20 +106,25 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
       minder.on(editNodeName, editNodeHandler);
       minder.on(dblclickName, dblclickHandler);
       minder.on(keydownName, keydownHandler);
-      minder.on(beforeExecCommandName, (e) => {
-        // console.log(e, "beforeExecCommand");
-        if (addNodeCommands.includes(e.commandName)) {
-          console.log(39999);
-          //throw Error("not allow add node");
-        }
-      });
-      minder.on("afterExecCommandName", (e) => {
-        console.log(e, "afterExecCommand");
-        if (addNodeCommands.includes(e.commandName)) {
-          console.log(499999);
-          //throw Error("not allow add node");
-        }
-      });
+      // minder.on(beforeExecCommandName, (e) => {
+      //   // console.log(e, "beforeExecCommand");
+      //   if (addNodeCommands.includes(e.commandName)) {
+      //     console.log(39999);
+      //     //throw Error("not allow add node");
+      //   }
+      // });
+      // minder.on("nodecreate", (e) => {
+      //   console.log(e, "afterExecCommand");
+      //   throw Error("not allow add node");
+      // });
+      // minder.on("nodeattach", (e) => {
+      //   console.log(e, "nodeattach");
+      //   throw Error("not allow add node");
+      // });
+      // minder.on("noderemove", (e) => {
+      //   console.log(e, "noderemove");
+      //   throw Error("not allow add node");
+      // });
     }
     return () => {
       if (minder) {
@@ -129,7 +132,7 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
         minder.off(dblclickName, dblclickHandler);
         minder.off(keydownName, keydownHandler);
         minder.off(selectionchangeName);
-        minder.off(beforeExecCommandName);
+        // minder.off(beforeExecCommandName);
       }
     };
   }, [minder, canEdit]);

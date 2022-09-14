@@ -11,15 +11,17 @@ type PropsType = {
   tagType: string;
   tagList: Array<{ value: string | number; label: string }>;
   disabledList?: Array<string | number>;
+  checkTag: (data: any) => void;
 };
 
 const MinderTagsDraw: React.FC<PropsType> = ({
-  onClose,
   title,
   visible,
   tagType,
   tagList = [],
   disabledList = [],
+  checkTag,
+  onClose,
 }) => {
   const isTag = tagType === "tag";
   const tagLabel = isTag ? "标签" : "指标";
@@ -76,6 +78,7 @@ const MinderTagsDraw: React.FC<PropsType> = ({
               [styles.tagDraw_item_disabled]: disabledList.includes(item.value),
             })}
             key={item.value}
+            onClick={() => checkTag(item)}
           >
             {item.label}
           </span>

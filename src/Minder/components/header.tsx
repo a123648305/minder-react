@@ -6,18 +6,18 @@ import styles from "../index.module.less";
 type PropsType = {
   title: string;
   saveStatus: boolean;
-  zoom?: number;
+  zoom: number;
   exitPage: () => void;
   importData: () => void;
   saveData: () => void;
   exportData: (type: "img" | "data") => void;
-  excomand: (key: string | string[]) => void;
+  excomand: (key: string) => void;
 };
 
 const MinderHeader: React.FC<PropsType> = ({
   title,
   saveStatus,
-  zoom = 100,
+  zoom,
   importData,
   saveData,
   exportData,
@@ -62,7 +62,7 @@ const MinderHeader: React.FC<PropsType> = ({
       >
         <i
           className={`icon iconfont ${data.icon}`}
-          onClick={() => excomand(data.commandkey)}
+          onClick={() => data.minderCommand && excomand(data.minderCommand)}
         />
       </Popover>
     );

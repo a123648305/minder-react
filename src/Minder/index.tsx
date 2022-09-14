@@ -29,6 +29,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
   const [tagList, SetTagList] = useState([]);
   const [treeData, SetTreeData] = useState();
   const [loading, SetLoading] = useState(true);
+  const [zoom, SetZoom] = useState(100);
 
   const disabledList = [1, 2];
 
@@ -61,7 +62,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
     };
     setTimeout(() => {
       //@ts-ignore
-      SetTreeData(defaultData);
+      SetTreeData(data);
     }, 300);
     setTimeout(() => SetLoading(false), 300);
   };
@@ -95,8 +96,19 @@ const MinderPage: React.FC<PropsType> = (props) => {
   };
 
   // 执行命令快捷键
-  const excomand = (type: string, val: any) => {
+  const excomand = (type: string, val?: any) => {
     console.log("excomand", type, val);
+    minderRef.current.editeorComand(type, val);
+  };
+
+  // 增加全局指标、标签 节点
+  const addGobalNode = (data) => {
+    const obj = {
+      text: "d",
+      id: "1",
+      type: "22",
+    };
+    console.log(data, "add gobal");
   };
 
   useEffect(() => {
@@ -114,6 +126,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
         saveData={() => saveTreeData()}
         exportData={exportData}
         excomand={excomand}
+        zoom={zoom}
       />
       <div className={styles.minder_content}>
         {/* {loading ? (
@@ -121,13 +134,18 @@ const MinderPage: React.FC<PropsType> = (props) => {
         ) : (
           <MinderContainer data={treeData} ref={minderRef} />
         )} */}
-        <MinderContainer data={treeData} ref={minderRef} />
+        <MinderContainer
+          data={treeData}
+          ref={minderRef}
+          zoomChange={(zoom: number) => SetZoom(zoom)}
+        />
         <MinderTagsDraw
           onClose={() => SetTagShow(false)}
           visible={tagShow}
           tagType={type}
           tagList={tagList}
           disabledList={disabledList}
+          checkTag={addGobalNode}
         />
       </div>
     </div>

@@ -3,13 +3,13 @@ export const mindCommands = [
     icon: "icon-charuzijiedian",
     label: "插入子节点",
     commandkey: ["Tab"],
-    minderCommand: "",
+    minderCommand: "AppendChildNode",
   },
   {
     icon: "icon-charutongjijiedian",
     label: "插入同级节点",
     commandkey: ["Enter"],
-    minderCommand: "",
+    minderCommand: "AppendSiblingNode",
   },
   {
     icon: "icon-chexiao",
@@ -27,25 +27,25 @@ export const mindCommands = [
     icon: "icon-shanchu1",
     label: "删除节点",
     commandkey: ["Delete"],
-    minderCommand: "",
+    minderCommand: "RemoveNode",
   },
   {
     icon: "icon-jia",
     label: "画布放大",
     commandkey: ["Ctrl", "="],
-    minderCommand: "",
+    minderCommand: "ZoomIn",
   },
   {
     icon: "icon-jian",
     label: "画布缩小",
     commandkey: ["Ctrl", "-"],
-    minderCommand: "",
+    minderCommand: "ZoomOut",
   },
   {
     icon: "icon-jian",
     label: "拖动画布     ",
     commandkey: ["Space", "鼠标左键"],
-    minderCommand: "",
+    minderCommand: "Hand",
   },
 ];
 
