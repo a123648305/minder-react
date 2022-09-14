@@ -7,7 +7,7 @@ const classNames = require("classnames");
 
 type PropsType = {};
 
-const commandList = [
+const commandGroup = [
   {
     groupName: "节点",
     items: getUseCommands(["插入子节点", "插入同级节点"]),
@@ -23,7 +23,7 @@ const commandList = [
 ];
 
 const CommandList: React.FC<PropsType> = () => {
-  const component = commandList.map(({ items, groupName }) => {
+  const component = commandGroup.map(({ items, groupName }) => {
     const groupDom = (
       <li
         className={classNames(
@@ -52,7 +52,7 @@ const CommandList: React.FC<PropsType> = () => {
     };
 
     const kesDom = items.map((item) => (
-      <li className={styles.commandDraw_item}>
+      <li className={styles.commandDraw_item} key={item.label}>
         <div className={styles.command_item_basic}>
           <i className={`icon iconfont ${item.icon}`} />
           <span className={styles.command_item_label}> {item.label}</span>
@@ -62,14 +62,18 @@ const CommandList: React.FC<PropsType> = () => {
         </div>
       </li>
     ));
-    return <ul className={styles.commandDraw_ul}>{[groupDom, kesDom]}</ul>;
+    return (
+      <ul className={styles.commandDraw_ul} key={groupName}>
+        {[groupDom, kesDom]}
+      </ul>
+    );
   });
 
   return <>{component}</>;
 };
 
 const CommandDraw: React.FC<PropsType> = () => {
-  const [open, SetOpen] = useState(true);
+  const [open, SetOpen] = useState(false);
 
   return (
     <>

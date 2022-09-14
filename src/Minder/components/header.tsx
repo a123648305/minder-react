@@ -96,14 +96,18 @@ const MinderHeader: React.FC<PropsType> = ({
           保存
         </Button>
         <div className={styles.export}>
-          <i
-            className="icon iconfont icon-daochutupian1"
-            onClick={() => exportData("img")}
-          />
-          <i
-            className="icon iconfont icon-daochubiaoge"
-            onClick={() => exportData("data")}
-          />
+          <Popover content="导出图片">
+            <i
+              className="icon iconfont icon-daochutupian1"
+              onClick={() => exportData("img")}
+            />
+          </Popover>
+          <Popover content="导出表格">
+            <i
+              className="icon iconfont icon-daochubiaoge"
+              onClick={() => exportData("data")}
+            />
+          </Popover>
         </div>
       </div>
     </div>
