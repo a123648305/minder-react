@@ -11,8 +11,7 @@ import {
 } from "react";
 import React from "react";
 import { OptionsType } from "../edit";
-import { Button, Col, Dropdown, Menu, Row, Space, Input } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { Button, Col, Row } from "antd";
 import { saveAs } from "file-saver";
 import EditNode from "../../component/Editor/index";
 import CommandDraw from "./commandDraw";
@@ -30,10 +29,11 @@ const leveColors = [
 
 type PropsType = OptionsType & {
   data: object;
+  readonly?: boolean;
 };
 
 const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
-  const { theme = "normal", template = "normal", data } = props;
+  const { theme = "normal", template = "normal", readonly, data } = props;
   console.log(data, ref, "ccccc");
   const kityRef = useRef(null);
   const [km, SetMinder] = useState();
@@ -137,23 +137,6 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     }
   };
 
-  const menu = () => {
-    const arr = [];
-    for (let i = 0; i < 6; i++) {
-      arr.push({
-        key: i + "",
-        label: `展开到${i}级节点`,
-      });
-    }
-
-    return (
-      <Menu
-        items={arr}
-        onClick={(val) => editeorComand("ExpandToLevel", val.key)}
-      />
-    );
-  };
-
   const exportFn = async (type: "img" | "data") => {
     try {
       if (type === "img") {
@@ -200,27 +183,6 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     <div>
       <Row>
         <Col>
-          <Dropdown overlay={menu}>
-            <Space>
-              展开
-              <DownOutlined />
-            </Space>
-          </Dropdown>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <Button onClick={() => console.log(km.exportJson())}>
-            获取当前数据
-          </Button>
-        </Col>
-        <Col>
-          <Button onClick={() => exportFn("img")}>导出图片</Button>
-        </Col>
-        <Col>
-          <Button onClick={() => exportFn("data")}>导出数据</Button>
-        </Col>
-        <Col>
           <Button onClick={() => editNode()}>编辑</Button>
         </Col>
         <Col>
@@ -245,24 +207,28 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
 
   useImperativeHandle(ref, () => ({
     exportFn,
-    getTreeData: () => {},
-    getSelectionData: () => {},
+    getTreeData: () => {
+      return km.exportJson();
+    },
+    getSelectionData: () => {
+      km.exportJson();
+    },
   }));
 
   return (
     <div className={styles.minder_containter}>
       <div className={styles.contentbox}>
-        {/* {opeatorArea} */}
+        {opeatorArea}
         <div
           ref={kityRef}
           type="application/kityminder"
           minder-data-type="json"
           style={{ height: "100%" }}
         ></div>
-        <EditNode minder={km} canEdit />
+        <EditNode minder={km} canEdit={!readonly} />
         <ul className={styles.lev_popover}>
           {leveColors.map((background, index) => (
-            <li>
+            <li onClick={() => editeorComand("ExpandToLevel", index)}>
               <span style={{ background }} />
               <span>{index + 1}级</span>
             </li>
