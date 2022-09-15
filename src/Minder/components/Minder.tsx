@@ -13,7 +13,7 @@ import React from "react";
 import { OptionsType } from "../edit";
 import { Button, Col, Row, message } from "antd";
 import { saveAs } from "file-saver";
-import EditNode from "../../component/Editor/index";
+import EditNode from "./Editor/index";
 import CommandDraw from "./commandDraw";
 import styles from "../index.module.less";
 
