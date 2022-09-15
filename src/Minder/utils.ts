@@ -1,3 +1,13 @@
+export const leveColors = [
+  "rgba(101,120,155,0.2)",
+  "rgba(255,136,0,0.2)",
+  "rgba(114,46,209,0.2)",
+  "rgba(246,60,162,0.2)",
+  "rgba(22,93,255,0.2)",
+  "rgba(255,51,51,0.2)",
+  "rgba(241,241,244,1)",
+];
+
 export const mindCommands = [
   {
     icon: "icon-charuzijiedian",
@@ -90,4 +100,17 @@ export const getUseCommand = (labe: string) => {
     commandkey: string[];
     minderCommand?: string;
   };
+};
+
+/**
+ * 获取树的最大层级
+ */
+export const getLevel = (data: any[], initLevel = 1) => {
+  let level = initLevel;
+  data.forEach((item: any) => {
+    if (item.children.length) {
+      level = getLevel(item.children, level + 1);
+    }
+  });
+  return level;
 };

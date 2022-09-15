@@ -1,4 +1,4 @@
-import { Drawer } from "antd";
+import { Drawer, Popover } from "antd";
 import React, { useState } from "react";
 import { getUseCommands } from "../utils";
 import styles from "../index.module.less";
@@ -92,10 +92,12 @@ const CommandDraw: React.FC<PropsType> = () => {
         <CommandList />
       </Drawer>
       <div className={styles.camand_popover}>
-        <i
-          className="icon iconfont icon-wenjuan"
-          onClick={() => SetOpen(true)}
-        ></i>
+        <Popover content="帮助" placement="top">
+          <i
+            className="icon iconfont icon-wenjuan"
+            onClick={() => SetOpen(true)}
+          ></i>
+        </Popover>
       </div>
     </>
   );

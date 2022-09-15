@@ -15,7 +15,7 @@ type PropsType = {
 
 const EditorWrapper: React.FC<PropsType> = (props) => {
   const { canEdit, onEdit, minder, defaultValue } = props;
-  console.log(props, "edit");
+  // console.log(props, "edit");
   const valueRef = useRef();
   const editingNodeRef = useRef();
   const editorRef = useRef();

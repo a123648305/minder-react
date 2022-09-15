@@ -15,16 +15,7 @@ import { Button, Col, Row, message } from "antd";
 import { saveAs } from "file-saver";
 import EditNode from "./Editor/index";
 import styles from "../index.module.less";
-
-const leveColors = [
-  "rgba(101,120,155,0.2)",
-  "rgba(255,136,0,0.2)",
-  "rgba(114,46,209,0.2)",
-  "rgba(246,60,162,0.2)",
-  "rgba(22,93,255,0.2)",
-  "rgba(255,51,51,0.2)",
-  "rgba(241,241,244,1)",
-];
+import { leveColors } from "../utils";
 
 type PropsType = OptionsType & {
   defaultOptions?: object; //思维导图默认配置
@@ -50,7 +41,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
   const [km, SetMinder] = useState();
 
   useEffect(() => {
-    if (kityRef.current && data) {
+    if (kityRef.current) {
       // 填充数据
       kityRef.current.append(JSON.stringify(data));
       // 创建 km 实例
@@ -63,9 +54,11 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
         SetMinder(km);
       }
     }
-  }, [data, kityRef]);
+  }, [kityRef]);
 
-  // useEffect(() => {}, [data]);
+  useEffect(() => {
+    km && km.importJson(data);
+  }, [data]);
 
   const editeorComand = (type: string, value?: string | number) => {
     console.log(type, value);
@@ -187,7 +180,6 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
   //     }
   //   }, 60);
   // };
-  console.log(km, "vv");
 
   const opeatorArea = (
     <div>
@@ -226,18 +218,18 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
       km.on("beforeExecCommand", (e) => {
         // 这里做一些判断 通过后继续执行指令
         const { commandName, commandArgs } = e;
-        const currentNode = km.getSelectedNode();
+        const currentNodes = km.getSelectedNodes();
         const shouldStopPropagation = () => true; // 用于终止操作
 
-        console.log(e, "execCommandTest", currentNode);
+        console.log(e, "execCommandTest", currentNodes);
         // 插入父，子节点
         if ("appendchildnode" === commandName) {
-          if (currentNode.id) {
+          if (currentNodes[0].data.id) {
             message.warning("不可添加子节点");
             e.shouldStopPropagation = shouldStopPropagation;
           }
 
-          if (currentNode.level === 7) {
+          if (currentNodes[0].data.level === 7) {
             message.warning("超出层级限制");
             e.shouldStopPropagation = shouldStopPropagation;
           }
@@ -245,14 +237,22 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
 
         // 移动节点
         if ("movetoparent" === commandName) {
-          message.warning("不可移动到此节点下");
-          e.shouldStopPropagation = shouldStopPropagation;
+          const [targetNode] = commandArgs[0];
+          if (targetNode.data.id) {
+            // message.warning("不可移动到此节点下");
+            e.shouldStopPropagation = shouldStopPropagation;
+          }
         }
 
-        // 移动节点
+        // 删除节点
         if ("removenode" === commandName) {
-          message.warning("不可添加子节点");
-          e.shouldStopPropagation = shouldStopPropagation;
+          // message.warning("莫及节点");
+          currentNodes.forEach((element) => {
+            // 父级节点只有这一个子节点
+            if (element.parent.children.length === 1) {
+              e.shouldStopPropagation = shouldStopPropagation;
+            }
+          });
         }
         return e;
       });
@@ -284,7 +284,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
   return (
     <div className={styles.minder_containter}>
       <div className={styles.contentbox}>
-        {opeatorArea}
+        {/* {opeatorArea} */}
         <div
           ref={kityRef}
           type="application/kityminder"

@@ -69,6 +69,7 @@ const MinderHeader: React.FC<PropsType> = ({
             </div>
           }
           key={Math.random()}
+          placement="bottom"
         >
           <i
             className={classNames("icon", "iconfont", data.icon, {
@@ -98,7 +99,9 @@ const MinderHeader: React.FC<PropsType> = ({
   return (
     <div className={styles.minder_header}>
       <div className={styles.header_left}>
-        <i className="icon iconfont icon-tuichu" onClick={() => exitPage()} />
+        <Popover content="退出" placement="bottom">
+          <i className="icon iconfont icon-tuichu" onClick={() => exitPage()} />
+        </Popover>
         <span className={styles.title}>{title}</span>
         <div className={styles.save_tip}>
           <i className="icon iconfont icon-baocunzhuangtai" />
@@ -123,13 +126,13 @@ const MinderHeader: React.FC<PropsType> = ({
           保存
         </Button>
         <div className={styles.export}>
-          <Popover content="导出图片">
+          <Popover content="导出图片" placement="bottom">
             <i
               className="icon iconfont icon-daochutupian1"
               onClick={() => exportData("img")}
             />
           </Popover>
-          <Popover content="导出表格">
+          <Popover content="导出表格" placement="bottom">
             <i
               className="icon iconfont icon-daochubiaoge"
               onClick={() => exportData("data")}
