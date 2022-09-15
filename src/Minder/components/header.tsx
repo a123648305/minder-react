@@ -1,12 +1,15 @@
 import { Button, Popover } from "antd";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { getUseCommands, getUseCommand } from "../utils";
 import styles from "../index.module.less";
+
+const classNames = require("classnames");
 
 type PropsType = {
   title: string;
   saveStatus: boolean;
   zoom: number;
+  isChecked?: boolean;
   exitPage: () => void;
   importData: () => void;
   saveData: () => void;
@@ -23,6 +26,7 @@ const MinderHeader: React.FC<PropsType> = ({
   exportData,
   exitPage,
   excomand,
+  isChecked,
 }) => {
   const [headerOpeatorIcon] = useState(
     getUseCommands(["撤销", "重做", "插入子节点", "插入同级节点", "删除节点"])
@@ -61,8 +65,21 @@ const MinderHeader: React.FC<PropsType> = ({
         }
       >
         <i
-          className={`icon iconfont ${data.icon}`}
-          onClick={() => data.minderCommand && excomand(data.minderCommand)}
+          className={classNames("icon", "iconfont", data.icon, {
+            [styles.comand_disabled]: !isChecked,
+          })}
+          onClick={() => {
+            if (data.minderCommand) {
+              // 选中了节点才给操作
+              if (
+                ["插入子节点", "插入同级节点", "删除节点"].includes(data.label)
+              ) {
+                isChecked && excomand(data.minderCommand);
+              } else {
+                excomand(data.minderCommand);
+              }
+            }
+          }}
         />
       </Popover>
     );
@@ -114,4 +131,4 @@ const MinderHeader: React.FC<PropsType> = ({
   );
 };
 
-export default MinderHeader;
+export default memo(MinderHeader);

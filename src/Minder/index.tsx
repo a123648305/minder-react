@@ -30,6 +30,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
   const [treeData, SetTreeData] = useState();
   const [loading, SetLoading] = useState(true);
   const [zoom, SetZoom] = useState(100);
+  const [selectNode, SetSelectNode] = useState<any[]>([]);
 
   const disabledList = [1, 2];
 
@@ -127,6 +128,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
         exportData={exportData}
         excomand={excomand}
         zoom={zoom}
+        isChecked={!!selectNode.length}
       />
       <div className={styles.minder_content}>
         {/* {loading ? (
@@ -138,6 +140,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
           data={treeData}
           ref={minderRef}
           zoomChange={(zoom: number) => SetZoom(zoom)}
+          selectionchange={(selectNode: any[]) => SetSelectNode(selectNode)}
         />
         <MinderTagsDraw
           onClose={() => SetTagShow(false)}

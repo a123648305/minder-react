@@ -28,18 +28,23 @@ const leveColors = [
 ];
 
 type PropsType = OptionsType & {
+  defaultOptions?: object; //思维导图默认配置
   data: object;
   readonly?: boolean;
-  zoomChange?: (zoom) => void;
+  zoomChange: (zoom) => void;
+  selectionchange: (selectNode) => void;
 };
 
 const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
   const {
-    theme = "normal",
-    template = "normal",
+    defaultOptions = {
+      zoom: [25, 50, 75, 100, 125, 175, 200],
+      defaultTheme: "normal",
+    },
     readonly,
     data,
     zoomChange,
+    selectionchange,
   } = props;
   console.log(data, ref, "ccccc");
   const kityRef = useRef(null);
@@ -50,15 +55,11 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
       // 填充数据
       kityRef.current.append(JSON.stringify(data));
       // 创建 km 实例
-      const km = (window.km = new kityminder.Minder());
+      const km = (window.km = new kityminder.Minder(defaultOptions));
       km.setup(kityRef.current);
       // km.disable();
       // km.execCommand("hand");
       SetMinder(km);
-      // editeorComand("Template", template);
-      // editeorComand("Theme", theme);
-      // km.execCommand("Template", "normal");
-      // km.execCommand("Theme", "normal");
     }
   }, [data, kityRef]);
 
@@ -253,6 +254,11 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
         }
         return e;
       });
+
+      km.on("selectionchange", (e) => {
+        const selNode = km.getSelectedNodes() || [];
+        selectionchange(selNode);
+      });
     }
     return () => {
       if (km) {
@@ -296,7 +302,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                editeorComand("ExpandToLevel", index);
+                editeorComand("ExpandToLevel", index + 1);
               }}
             >
               <span style={{ background }} />
