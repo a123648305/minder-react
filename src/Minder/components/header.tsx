@@ -1,5 +1,5 @@
 import { Button, Popover } from "antd";
-import { memo, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { getUseCommands, getUseCommand } from "../utils";
 import styles from "../index.module.less";
 
@@ -10,6 +10,7 @@ type PropsType = {
   saveStatus: boolean;
   zoom: number;
   isChecked?: boolean;
+  readonly?: boolean;
   exitPage: () => void;
   importData: () => void;
   saveData: () => void;
@@ -27,63 +28,72 @@ const MinderHeader: React.FC<PropsType> = ({
   exitPage,
   excomand,
   isChecked,
+  readonly,
 }) => {
   const [headerOpeatorIcon] = useState(
     getUseCommands(["撤销", "重做", "插入子节点", "插入同级节点", "删除节点"])
   );
 
-  const commandKey = (data: {
-    icon: string;
-    label: string;
-    commandkey: string[];
-    minderCommand?: string;
-  }) => {
-    const keysDom = (keys: string[]) => {
-      const dom: React.ReactNode[] = [];
-      keys.forEach((element, index) => {
-        const elm =
-          index > 0 ? (
-            [
-              <span className={styles.keys_plus}>+</span>,
-              <span>{element}</span>,
-            ]
-          ) : (
-            <span>{element}</span>
-          );
-        dom.push(elm);
-      });
-      return dom;
-    };
+  const commandKey = useCallback(
+    (data: {
+      icon: string;
+      label: string;
+      commandkey: string[];
+      minderCommand?: string;
+    }) => {
+      const keysDom = (keys: string[], suffixkey: string) => {
+        const dom: React.ReactNode[] = [];
+        keys.forEach((element, index) => {
+          const elm =
+            index > 0 ? (
+              [
+                <span className={styles.keys_plus} key={suffixkey + index}>
+                  +
+                </span>,
+                <span key={suffixkey + index + 100}>{element}</span>,
+              ]
+            ) : (
+              <span key={suffixkey + index}>{element}</span>
+            );
+          dom.push(elm);
+        });
+        return dom;
+      };
 
-    return (
-      <Popover
-        content={
-          <div className={styles.commandKey_popover}>
-            <p>{data.label}</p>
-            <p>{keysDom(data.commandkey)}</p>
-          </div>
-        }
-      >
-        <i
-          className={classNames("icon", "iconfont", data.icon, {
-            [styles.comand_disabled]: !isChecked,
-          })}
-          onClick={() => {
-            if (data.minderCommand) {
-              // 选中了节点才给操作
-              if (
-                ["插入子节点", "插入同级节点", "删除节点"].includes(data.label)
-              ) {
-                isChecked && excomand(data.minderCommand);
-              } else {
-                excomand(data.minderCommand);
+      return (
+        <Popover
+          content={
+            <div className={styles.commandKey_popover}>
+              <p>{data.label}</p>
+              <p>{keysDom(data.commandkey, data.label)}</p>
+            </div>
+          }
+          key={Math.random()}
+        >
+          <i
+            className={classNames("icon", "iconfont", data.icon, {
+              [styles.comand_disabled]: readonly || !isChecked,
+            })}
+            onClick={() => {
+              if (data.minderCommand && !readonly) {
+                // 选中了节点才给操作
+                if (
+                  ["插入子节点", "插入同级节点", "删除节点"].includes(
+                    data.label
+                  )
+                ) {
+                  isChecked && excomand(data.minderCommand);
+                } else {
+                  excomand(data.minderCommand);
+                }
               }
-            }
-          }}
-        />
-      </Popover>
-    );
-  };
+            }}
+          />
+        </Popover>
+      );
+    },
+    [excomand, isChecked, readonly]
+  );
 
   return (
     <div className={styles.minder_header}>

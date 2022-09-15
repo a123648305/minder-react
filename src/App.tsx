@@ -8,16 +8,18 @@ const App = () => {
       <MinderPage
         projectId="fa5cf22f6a154d66993611e7974a7c19"
         fetchApi={{
-          getTreeData: () =>
+          getTreeData: (data) =>
             fetch(
               "https://ironfist.fat.yuntingai.com/api/ironfist/newBusinessTag/tree/save"
             ),
-          getAlltags: () =>
+          getAlltags: (data) =>
             fetch(
               "https://ironfist.fat.yuntingai.com/api/ironfist/newBusinessTag/usabletTag/fa5cf22f6a154d66993611e7974a7c19?businessId=111"
             ),
         }}
         type="tag"
+        readonly={true}
+        id="1"
       ></MinderPage>
     </div>
   );

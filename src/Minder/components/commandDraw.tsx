@@ -30,21 +30,24 @@ const CommandList: React.FC<PropsType> = () => {
           styles.commandDraw_item,
           styles.commandDraw_title
         )}
+        key={groupName + "li"}
       >
         {groupName}
       </li>
     );
-    const keysDom = (keys: string[]) => {
+    const keysDom = (keys: string[], suffixkey: string) => {
       const dom: React.ReactNode[] = [];
       keys.forEach((element, index) => {
         const elm =
           index > 0 ? (
             [
-              <span className={styles.keys_plus}>+</span>,
-              <span>{element}</span>,
+              <span className={styles.keys_plus} key={suffixkey + index}>
+                +
+              </span>,
+              <span key={suffixkey + index + 100}>{element}</span>,
             ]
           ) : (
-            <span>{element}</span>
+            <span key={suffixkey + index}>{element}</span>
           );
         dom.push(elm);
       });
@@ -58,7 +61,7 @@ const CommandList: React.FC<PropsType> = () => {
           <span className={styles.command_item_label}> {item.label}</span>
         </div>
         <div className={styles.command_item_kyes}>
-          {keysDom(item.commandkey)}
+          {keysDom(item.commandkey, item.label)}
         </div>
       </li>
     ));

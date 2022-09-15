@@ -14,7 +14,6 @@ import { OptionsType } from "../edit";
 import { Button, Col, Row, message } from "antd";
 import { saveAs } from "file-saver";
 import EditNode from "./Editor/index";
-import CommandDraw from "./commandDraw";
 import styles from "../index.module.less";
 
 const leveColors = [
@@ -57,9 +56,12 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
       // 创建 km 实例
       const km = (window.km = new kityminder.Minder(defaultOptions));
       km.setup(kityRef.current);
-      // km.disable();
-      // km.execCommand("hand");
-      SetMinder(km);
+      if (readonly) {
+        km.disable();
+        //km.execCommand("hand");
+      } else {
+        SetMinder(km);
+      }
     }
   }, [data, kityRef]);
 
@@ -304,13 +306,13 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
                 e.stopPropagation();
                 editeorComand("ExpandToLevel", index + 1);
               }}
+              key={index}
             >
               <span style={{ background }} />
               <span>{index + 1}级</span>
             </li>
           ))}
         </ul>
-        <CommandDraw />
       </div>
     </div>
   );

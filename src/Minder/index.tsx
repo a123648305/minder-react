@@ -3,17 +3,29 @@ import { useEffect, useRef, useState } from "react";
 import MinderHeader from "./components/header";
 import MinderContainer from "./components/Minder";
 import MinderTagsDraw from "./components/tagDraw";
+import CommandDraw from "./components/commandDraw";
 import styles from "./index.module.less";
+
+/**
+ * projectId string 项目id
+ * fetchApi  promise 一些要用到的接口
+ * isCem  boolean  用于区分cemforont or oms
+ * type  string   用于区分标签还是指标
+ * id  string  树的id
+ * readonly boolean 是否只读模式 预览
+ */
 
 type PropsType = {
   projectId: string;
   fetchApi: {
-    getTreeData: () => Promise<Response>;
-    getAlltags: () => Promise<Response>;
-    [key: string]: () => Promise<Response>;
+    getTreeData: (data: any) => Promise<Response>;
+    getAlltags: (data: any) => Promise<Response>;
+    [key: string]: (data: any) => Promise<Response>;
   };
   isCem?: boolean;
   type: string;
+  id?: string;
+  readonly?: boolean;
 };
 const MinderPage: React.FC<PropsType> = (props) => {
   const {
@@ -21,7 +33,10 @@ const MinderPage: React.FC<PropsType> = (props) => {
     projectId,
     isCem,
     type,
+    id,
+    readonly,
   } = props;
+  console.log("ccc");
 
   const title = `业务视角名称1`;
   const minderRef = useRef<any>();
@@ -32,11 +47,10 @@ const MinderPage: React.FC<PropsType> = (props) => {
   const [zoom, SetZoom] = useState(100);
   const [selectNode, SetSelectNode] = useState<any[]>([]);
 
-  const disabledList = [1, 2];
+  const disabledList: string[] = [];
 
   // 获取树的数据 构造符合的结构
   const constructTree = () => {
-    const id = 100;
     // getTreeData(id).then((res) => {
     //   SetTreeData(res);
     // });
@@ -63,7 +77,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
     };
     setTimeout(() => {
       //@ts-ignore
-      SetTreeData(data);
+      SetTreeData(defaultData);
     }, 300);
     setTimeout(() => SetLoading(false), 300);
   };
@@ -113,8 +127,8 @@ const MinderPage: React.FC<PropsType> = (props) => {
   };
 
   useEffect(() => {
-    constructTree();
-    fetchAllTags();
+    // constructTree();
+    // fetchAllTags();
   }, []);
 
   return (
@@ -129,6 +143,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
         excomand={excomand}
         zoom={zoom}
         isChecked={!!selectNode.length}
+        readonly={readonly}
       />
       <div className={styles.minder_content}>
         {/* {loading ? (
@@ -137,6 +152,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
           <MinderContainer data={treeData} ref={minderRef} />
         )} */}
         <MinderContainer
+          readonly={readonly}
           data={treeData}
           ref={minderRef}
           zoomChange={(zoom: number) => SetZoom(zoom)}
@@ -150,6 +166,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
           disabledList={disabledList}
           checkTag={addGobalNode}
         />
+        <CommandDraw />
       </div>
     </div>
   );
