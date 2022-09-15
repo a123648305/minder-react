@@ -221,10 +221,6 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
       });
       // 执行命令前
       km.on("beforeExecCommand", (e) => {
-        console.log(e, "beforeExecCommand");
-      });
-      // 执行命令测试
-      km.on("execCommandTest", (e) => {
         // 这里做一些判断 通过后继续执行指令
         const { commandName, commandArgs } = e;
         const currentNode = km.getSelectedNode();
@@ -261,7 +257,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     return () => {
       if (km) {
         km.off("zoom");
-        km.off("execCommandTest");
+        km.off("beforeExecCommand");
       }
     };
   }, [km]);

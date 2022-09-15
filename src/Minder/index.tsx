@@ -102,7 +102,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
   };
 
   // 增加全局指标、标签 节点
-  const addGobalNode = (data) => {
+  const addGobalNode = (data: any) => {
     const obj = {
       text: "d",
       id: "1",
