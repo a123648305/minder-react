@@ -1,3 +1,15 @@
+type nodeDataType = {
+  data: {
+    id: number;
+    text: string;
+    type: string;
+    borderColor?: string;
+    borderRadius?: number;
+    level: number;
+  };
+  children?: nodeDataType[];
+};
+
 export const leveColors = [
   "rgba(101,120,155,0.2)",
   "rgba(255,136,0,0.2)",
@@ -113,4 +125,21 @@ export const getLevel = (data: any[], initLevel = 1) => {
     }
   });
   return level;
+};
+
+export const transportdata = (data: any[]) => {
+  const arr: nodeDataType[] = [];
+  data.forEach(({ id, text, type, level, children: child }) => {
+    const data: any = { id, text, type, level };
+    if (type === "COMBINE") {
+      // 组合标签 需要加颜色区分
+      data["border-radius"] = 50;
+      data["border-color"] = leveColors[level];
+      data["background"] = "white";
+    }
+
+    const children = child ? transportdata(child) : [];
+    arr.push({ data, children });
+  });
+  return arr;
 };

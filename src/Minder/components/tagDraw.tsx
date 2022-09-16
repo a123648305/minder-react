@@ -1,8 +1,8 @@
-import { Drawer, Input, message, Popover } from "antd";
-import { useMemo, useRef, useState } from "react";
-import styles from "../index.module.less";
+import { Drawer, Input, message, Popover } from 'antd';
+import { useMemo, useRef, useState } from 'react';
+import styles from '../index.module.less';
 
-const classNames = require("classnames");
+const classNames = require('classnames');
 
 type PropsType = {
   selectNode: any[];
@@ -25,17 +25,17 @@ const MinderTagsDraw: React.FC<PropsType> = ({
   selectNode,
   checkTag,
 }) => {
-  const isTag = tagType === "tag";
-  const tagLabel = isTag ? "标签" : "指标";
-  const defaultTitle = isTag ? "全局标签" : "全局指标";
+  const isTag = tagType === 'tag';
+  const tagLabel = isTag ? '标签' : '指标';
+  const defaultTitle = isTag ? '全局标签' : '全局指标';
 
-  const [kewWord, SetKewWord] = useState("");
+  const [kewWord, SetKewWord] = useState('');
   const [open, SetOpen] = useState(false);
   const curTagsList = useMemo(() => {
     return tagList.filter((k) => k.text.includes(kewWord));
   }, [tagList, kewWord]);
 
-  const searchVal = useRef("");
+  const searchVal = useRef('');
 
   const searchTags = () => {
     SetKewWord(searchVal.current);
@@ -52,10 +52,11 @@ const MinderTagsDraw: React.FC<PropsType> = ({
         title={title || defaultTitle}
         placement="right"
         mask={false}
-        open={open}
+        visible={open}
         getContainer={false}
         className={styles.tagDraw}
         onClose={() => SetOpen(false)}
+        width={378}
       >
         <Input
           placeholder={`请输入${tagLabel}名称`}
@@ -67,18 +68,13 @@ const MinderTagsDraw: React.FC<PropsType> = ({
               <i
                 className="icon iconfont  icon-cem_close-window"
                 onClick={() => {
-                  searchVal.current = "";
+                  searchVal.current = '';
                   searchTags();
                 }}
               />
             ),
           }}
-          suffix={
-            <i
-              className="icon iconfont  icon-sousuo1"
-              onClick={() => searchTags()}
-            />
-          }
+          suffix={<i className="icon iconfont  icon-sousuo1" onClick={() => searchTags()} />}
           onPressEnter={() => searchTags()}
         />
         <div className={styles.tagDraw_list}>
@@ -98,10 +94,7 @@ const MinderTagsDraw: React.FC<PropsType> = ({
       </Drawer>
       <div className={styles.tagDraw_popover}>
         <Popover content="添加全局指标" placement="top">
-          <i
-            className="icon iconfont icon-jia"
-            onClick={() => openTagsDraw()}
-          ></i>
+          <i className="icon iconfont icon-jia" onClick={() => openTagsDraw()}></i>
         </Popover>
       </div>
     </>

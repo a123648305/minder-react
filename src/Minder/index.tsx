@@ -6,7 +6,7 @@ import MinderContainer from "./components/Minder";
 import MinderTagsDraw from "./components/tagDraw";
 import CommandDraw from "./components/commandDraw";
 import SaveDialog from "./components/saveDialog";
-import { getLevel, getUseCommand, leveColors } from "./utils";
+import { getLevel, getUseCommand, leveColors, transportdata } from "./utils";
 import styles from "./index.module.less";
 
 // import { data as tagLe } from "./mock";
@@ -58,6 +58,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
 
   const [curTitle, SetTitle] = useState(title || "未命名");
   const minderRef = useRef<any>();
+  const editTreeData = useRef<any>();
   const [tagList, SetTagList] = useState<
     { id: number; isEnabled: boolean; text: string }[]
   >([]);
@@ -82,38 +83,6 @@ const MinderPage: React.FC<PropsType> = (props) => {
         data: {
           text: title,
         },
-        datas: [
-          {
-            data: {
-              text: "120",
-              type: "COMBINE",
-            },
-            children: [
-              {
-                data: {
-                  text: "全局标签",
-                  type: "GLOBAL",
-                  id: 20,
-                },
-              },
-            ],
-          },
-          {
-            data: {
-              text: "一级标签",
-              type: "COMBINE",
-            },
-            children: [
-              {
-                data: {
-                  text: "全局标签",
-                  type: "GLOBAL",
-                  id: 20,
-                },
-              },
-            ],
-          },
-        ],
       },
     };
     if (id) {
@@ -121,6 +90,20 @@ const MinderPage: React.FC<PropsType> = (props) => {
         // SetTreeData(res);
         console.log(res);
         if (res.code === 20000) {
+          const { businessTag, treeData } = res.result;
+          const editTree = {
+            root: {
+              data: {
+                text: businessTag.name,
+              },
+              children: transportdata(treeData),
+            },
+          };
+          console.log("tree data ====>", editTree);
+          SetTreeData(editTree);
+          SetTitle(businessTag.name);
+          editTreeData.current = businessTag;
+          SetLoading(false);
         }
       });
     } else {
@@ -142,56 +125,28 @@ const MinderPage: React.FC<PropsType> = (props) => {
 
   // 获取全局绑定模块列表
   const fetchModules = () => {
-    const dd = [
-      {
-        id: 1,
-        moduleName: "产品洞察",
-        moduleCode: "ANALYZE_INSIGHT",
-      },
-      {
-        id: 2,
-        moduleName: "服务洞察",
-        moduleCode: "WAITER_INSIGHT",
-      },
-      {
-        id: 3,
-        moduleName: "市场洞察",
-        moduleCode: "MARKET_INSIGHT",
-      },
-      {
-        id: 4,
-        moduleName: "全局分析",
-        moduleCode: "GLOBAL_ANALYSIS",
-      },
-    ];
-    // getModulesList({ projectId, id }).then((res) => {
-    //   if (res.code === 20000) {
-    //     const arr = res.data.result.length
-    //       ? res.data.result.map((item) => ({
-    //           ...item,
-    //           label: item.moduleName,
-    //           value: item.id,
-    //         }))
-    //       : [];
-    //     SetModuleList(arr);
-    //   }
-    // });
-
-    SetModuleList(
-      dd.map((item) => ({
-        ...item,
-        label: item.moduleName,
-        value: item.id,
-      }))
-    );
+    getModulesList({ projectId, id }).then((res) => {
+      if (res.code === 20000) {
+        const arr = res.data.result.length
+          ? res.data.result.map((item) => ({
+              ...item,
+              label: item.moduleName,
+              value: item.id,
+            }))
+          : [];
+        SetModuleList(arr);
+      }
+    });
   };
 
   // 绑定模块
   const bindModule = async () => {
-    await minderRef.current.validTree();
+    // await minderRef.current.validTree();
     SetSaveForm({
       title: curTitle,
-      moduleIds: [],
+      moduleIds: id
+        ? editTreeData.current.blocksId.map((k: { id: number }) => k.id)
+        : [],
     });
   };
 
@@ -261,9 +216,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
       text,
       id,
       type: "GLOBAL", // GLOBAL,COMBINE
-      "border-radius": 50,
-      "border-color": leveColors[selectNode[0].getLevel()],
-      background: "white",
+      background: "f1f1f4",
     };
     console.log(data, "add gobal", selectNode[0].getLevel());
     const shell = getUseCommand("插入子节点");
