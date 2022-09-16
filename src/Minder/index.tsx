@@ -89,8 +89,8 @@ const MinderPage: React.FC<PropsType> = (props) => {
       getTreeData({ projectId, id }).then((res) => {
         // SetTreeData(res);
         console.log(res);
-        if (res.code === 20000) {
-          const { businessTag, treeData } = res.result;
+        if (res.data.code === 20000) {
+          const { businessTag, treeData } = res.data.result;
           const editTree = {
             root: {
               data: {
@@ -117,7 +117,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
   // 获取全局指标、标签
   const fetchAllTags = () => {
     getAlltags({ projectId, id }).then((res) => {
-      if (res.code === 20000) {
+      if (res.data.code === 20000) {
         SetTagList(res.data.result);
       }
     });
@@ -126,7 +126,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
   // 获取全局绑定模块列表
   const fetchModules = () => {
     getModulesList({ projectId, id }).then((res) => {
-      if (res.code === 20000) {
+      if (res.data.code === 20000) {
         const arr = res.data.result.length
           ? res.data.result.map((item) => ({
               ...item,
@@ -165,7 +165,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
     };
     console.log(treeData, params, "save");
     saveTree(params).then((res) => {
-      if (res.code === 20000) {
+      if (res.data.code === 20000) {
         if (title !== data.text) {
           // 树名称改变 同步显示
           data.text = title;
