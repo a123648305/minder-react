@@ -11,7 +11,7 @@ type PropsType = {
   zoom: number;
   isChecked?: boolean;
   readonly?: boolean;
-  exitPage: () => void;
+  exictPage: () => void;
   importData: () => void;
   saveData: () => void;
   exportData: (type: "img" | "data") => void;
@@ -25,7 +25,7 @@ const MinderHeader: React.FC<PropsType> = ({
   importData,
   saveData,
   exportData,
-  exitPage,
+  exictPage,
   excomand,
   isChecked,
   readonly,
@@ -100,7 +100,10 @@ const MinderHeader: React.FC<PropsType> = ({
     <div className={styles.minder_header}>
       <div className={styles.header_left}>
         <Popover content="退出" placement="bottom">
-          <i className="icon iconfont icon-tuichu" onClick={() => exitPage()} />
+          <i
+            className="icon iconfont icon-tuichu"
+            onClick={() => exictPage()}
+          />
         </Popover>
         <span className={styles.title}>{title}</span>
         <div className={styles.save_tip}>

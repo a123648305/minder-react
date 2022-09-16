@@ -41,7 +41,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
   const [km, SetMinder] = useState();
 
   useEffect(() => {
-    if (kityRef.current) {
+    if (kityRef.current && !km) {
       // 填充数据
       kityRef.current.append(JSON.stringify(data));
       // 创建 km 实例

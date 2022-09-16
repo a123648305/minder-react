@@ -31,6 +31,8 @@ type PropsType = {
   type: string;
   id?: string;
   readonly?: boolean;
+  title?: string;
+  exictPage?: () => void;
 };
 const MinderPage: React.FC<PropsType> = (props) => {
   const {
@@ -40,10 +42,12 @@ const MinderPage: React.FC<PropsType> = (props) => {
     type,
     id,
     readonly,
+    title,
+    exictPage,
   } = props;
   console.log("ccc");
 
-  const title = `业务视角名称1`;
+  const [curTitle, SetTitle] = useState(title || "未命名");
   const minderRef = useRef<any>();
   const [tagList, SetTagList] = useState<
     { id: number; isEnabled: boolean; text: string }[]
@@ -68,6 +72,8 @@ const MinderPage: React.FC<PropsType> = (props) => {
       getTreeData({ projectId, id }).then((res) => {
         // SetTreeData(res);
         console.log(res);
+        if (res.code === 20000) {
+        }
       });
     } else {
       setTimeout(() => {
@@ -80,9 +86,10 @@ const MinderPage: React.FC<PropsType> = (props) => {
   // 获取全局指标、标签
   const fetchAllTags = () => {
     getAlltags({ projectId, businessId: id }).then((res) => {
-      SetTagList(res.result);
+      if (res.code === 20000) {
+        SetTagList(res.data.result);
+      }
     });
-    // setTimeout(() => SetTagList(tagLe), 500);
   };
 
   // 保存数据
@@ -101,8 +108,8 @@ const MinderPage: React.FC<PropsType> = (props) => {
   };
 
   // 退出当前页面
-  const exitPage = () => {
-    console.log("exit", minderRef.current.getTreeData());
+  const exictClick = () => {
+    console.log("exict", minderRef.current.getTreeData());
     const tset = {
       root: {
         data: {
@@ -129,6 +136,8 @@ const MinderPage: React.FC<PropsType> = (props) => {
       },
     };
     // SetTreeData(tset);
+
+    exictPage && exictPage();
   };
 
   // 导入数据
@@ -170,9 +179,9 @@ const MinderPage: React.FC<PropsType> = (props) => {
   return (
     <div className={styles.minder_wrap}>
       <MinderHeader
-        title={title}
+        title={curTitle}
         saveStatus={false}
-        exitPage={exitPage}
+        exictPage={exictClick}
         importData={importData}
         saveData={() => saveTreeData()}
         exportData={exportData}
