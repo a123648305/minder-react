@@ -157,135 +157,135 @@
         }
       }
     }
+  }
 
-    .camand_popover {
-      position: absolute;
-      right: 28px;
-      bottom: 30px;
-      width: 32px;
-      height: 32px;
-      line-height: 32px;
-      text-align: center;
-      background: #ffffff;
-      border: 1px solid #f1f1f4;
-      border-radius: 17px;
-      box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      :global {
-        .icon-wenjuan {
-          color: #262626;
-          font-size: 14px;
-          &:hover {
-            color: #7262fd;
-          }
+  .camand_popover {
+    position: absolute;
+    right: 28px;
+    bottom: 30px;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #f1f1f4;
+    border-radius: 17px;
+    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    :global {
+      .icon-wenjuan {
+        color: #262626;
+        font-size: 14px;
+        &:hover {
+          color: #7262fd;
         }
       }
     }
+  }
 
-    .tagDraw {
-      :global {
-        .ant-drawer-header-title {
-          .ant-drawer-close {
-            position: absolute;
-            right: 0;
-          }
-        }
-        .ant-drawer-body {
-          display: flex;
-          flex-direction: column;
-          padding: 16px;
+  .tagDraw {
+    :global {
+      .ant-drawer-header-title {
+        .ant-drawer-close {
+          position: absolute;
+          right: 0;
         }
       }
-
-      .tagDraw_list {
-        flex: 1;
-        padding-top: 16px;
-        overflow-y: auto;
-        .tagDraw_item {
-          float: left;
-          margin-right: 12px;
-          margin-bottom: 12px;
-          padding: 4px 12px;
-          color: #262626;
-          font-weight: 400;
-          line-height: 22px;
-          background-color: #f1f1f4;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-        .tagDraw_item_tag {
-          background-color: #fff;
-          border: 1px solid #bfbfbf;
-        }
-        .tagDraw_item_disabled {
-          color: #bfbfbf;
-          cursor: default;
-        }
+      .ant-drawer-body {
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
       }
     }
-    .tagDraw_popover {
-      position: absolute;
-      right: 28px;
-      bottom: 78px;
-      width: 32px;
-      height: 32px;
-      line-height: 32px;
-      text-align: center;
-      background: #7262fd;
+
+    .tagDraw_list {
+      flex: 1;
+      padding-top: 16px;
+      overflow-y: auto;
+      .tagDraw_item {
+        float: left;
+        margin-right: 12px;
+        margin-bottom: 12px;
+        padding: 4px 12px;
+        color: #262626;
+        font-weight: 400;
+        line-height: 22px;
+        background-color: #f1f1f4;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .tagDraw_item_tag {
+        background-color: #fff;
+        border: 1px solid #bfbfbf;
+      }
+      .tagDraw_item_disabled {
+        color: #bfbfbf;
+        cursor: default;
+      }
+    }
+  }
+  .tagDraw_popover {
+    position: absolute;
+    right: 28px;
+    bottom: 78px;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    background: #7262fd;
+    border: 1px solid #8c81fd;
+    border-radius: 50%;
+    box-shadow: 0px 4px 10px 0px rgba(114, 98, 253, 0.32);
+    cursor: pointer;
+    &:hover {
+      background: #8c81fd;
       border: 1px solid #8c81fd;
-      border-radius: 50%;
-      box-shadow: 0px 4px 10px 0px rgba(114, 98, 253, 0.32);
-      cursor: pointer;
-      &:hover {
-        background: #8c81fd;
-        border: 1px solid #8c81fd;
-      }
-      :global {
-        .icon-jia {
-          color: #fff;
-          font-size: 18px;
-        }
+    }
+    :global {
+      .icon-jia {
+        color: #fff;
+        font-size: 18px;
       }
     }
+  }
 
-    .commandDraw {
-      .commandDraw_ul {
-        padding: 0;
-        list-style: none;
-        .commandDraw_item {
-          padding: 16px 0;
-          border-bottom: 1px solid #e5e5e5;
-          .command_item_basic {
-            display: inline-block;
-            color: #262626;
-            :global {
-              .iconfont {
-                margin-right: 10px;
-                font-size: 16px;
-              }
-            }
-          }
-          .command_item_kyes {
-            float: right;
-            span {
-              padding: 4px;
-              background: #f1f1f4;
-              border-radius: 2px;
-            }
-            .keys_plus {
-              margin: 0 4px;
-              color: #626262;
-              font-weight: bold;
-              background: #fff;
+  .commandDraw {
+    .commandDraw_ul {
+      padding: 0;
+      list-style: none;
+      .commandDraw_item {
+        padding: 16px 0;
+        border-bottom: 1px solid #e5e5e5;
+        .command_item_basic {
+          display: inline-block;
+          color: #262626;
+          :global {
+            .iconfont {
+              margin-right: 10px;
+              font-size: 16px;
             }
           }
         }
-        .commandDraw_title {
-          color: #8c8c8c;
-          font-weight: 400;
-          font-size: 12px;
-          line-height: 12px;
+        .command_item_kyes {
+          float: right;
+          span {
+            padding: 4px;
+            background: #f1f1f4;
+            border-radius: 2px;
+          }
+          .keys_plus {
+            margin: 0 4px;
+            color: #626262;
+            font-weight: bold;
+            background: #fff;
+          }
         }
+      }
+      .commandDraw_title {
+        color: #8c8c8c;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 12px;
       }
     }
   }

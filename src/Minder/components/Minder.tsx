@@ -186,21 +186,6 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
       <Row>
         <Col>
           <Button onClick={() => editNode()}>编辑</Button>
-        </Col>
-        <Col>
-          <Button onClick={() => editeorComand("AppendChildNode", "children")}>
-            插入子节点
-          </Button>
-        </Col>
-        <Col>
-          <Button onClick={() => editeorComand("AppendParentNode", "parent")}>
-            插入父节点
-          </Button>
-        </Col>
-        <Col>
-          <Button onClick={() => editeorComand("AppendSiblingNode", "brother")}>
-            插入同级节点
-          </Button>
           <Button onClick={() => editeorComand("resetlayout")}>整理布局</Button>
         </Col>
       </Row>
@@ -273,6 +258,11 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
   useImperativeHandle(ref, () => ({
     exportFn,
     editeorComand,
+    validTree: () => {
+      return new Promise((resolve, reject) => {
+        resolve(55);
+      });
+    },
     getTreeData: () => {
       return km.exportJson();
     },
