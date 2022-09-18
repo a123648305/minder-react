@@ -14,7 +14,6 @@ const SaveDialog: React.FC<PropsType> = ({
   onCancel,
   onOK,
 }) => {
-  console.log(formData);
   const [form] = Form.useForm();
   const [visible, SetVisible] = useState(false);
 

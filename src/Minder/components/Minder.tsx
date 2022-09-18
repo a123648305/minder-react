@@ -1,7 +1,7 @@
 // @ts-nocheck
-import "./dist/kityminder.core.css";
-import "./dist/kity";
-import "./dist/kityminder.core";
+import "./minderDist/kityminder.core.css";
+import "./minderDist/kity.min";
+import "./minderDist/kityminder.core.min";
 import {
   forwardRef,
   useEffect,
@@ -214,7 +214,9 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
             e.shouldStopPropagation = shouldStopPropagation;
           }
 
-          if (currentNodes[0].data.level === 7) {
+          if (
+            (currentNodes[0].data.level || currentNodes[0].getLevel()) === 7
+          ) {
             message.warning("超出层级限制");
             e.shouldStopPropagation = shouldStopPropagation;
           }

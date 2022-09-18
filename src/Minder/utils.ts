@@ -37,13 +37,13 @@ export const mindCommands = [
     icon: "icon-chexiao",
     label: "撤销",
     commandkey: ["Ctrl", "Z"],
-    minderCommand: "",
+    minderCommand: "undo",
   },
   {
     icon: "icon-zhongzuo",
     label: "重做",
     commandkey: ["Ctrl", "Shift", "Z"],
-    minderCommand: "",
+    minderCommand: "redo",
   },
   {
     icon: "icon-shanchu1",
