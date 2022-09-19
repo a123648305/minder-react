@@ -90,19 +90,19 @@ const MinderPage: React.FC<PropsType> = (props) => {
         // SetTreeData(res);
         console.log(res);
         if (res.data.code === 20000) {
-          const { businessTag, treeData } = res.data.result;
+          const { businessPoint, treeData } = res.data.result;
           const editTree = {
             root: {
               data: {
-                text: businessTag.name,
+                text: businessPoint.name,
               },
               children: transportdata(treeData),
             },
           };
           console.log("tree data ====>", editTree);
           SetTreeData(editTree);
-          SetTitle(businessTag.name);
-          editTreeData.current = businessTag;
+          SetTitle(businessPoint.name);
+          editTreeData.current = businessPoint;
           SetLoading(false);
         }
       });
@@ -162,8 +162,8 @@ const MinderPage: React.FC<PropsType> = (props) => {
     const { children, data } = treeData.root;
     const { moduleIds, title } = moduleForm;
     const params = {
-      businessTagId: id,
-      businessTagName: title,
+      businessPointId: id,
+      businessPointName: title,
       datas: children,
       level: children.length ? getLevel(children) : 0,
       projectId,
