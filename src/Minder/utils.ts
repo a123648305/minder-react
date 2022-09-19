@@ -143,3 +143,15 @@ export const transportdata = (data: any[]) => {
   });
   return arr;
 };
+
+/**初始化新节点的数据 */
+export const initNodeData = (lev: number, tag?: boolean) => {
+  const defaultNodeData = {
+    text: `${lev}级标签`,
+    type: "COMBINE",
+    "border-radius": 50,
+    "border-color": leveColors[lev - 1],
+    background: "white",
+  };
+  return defaultNodeData;
+};

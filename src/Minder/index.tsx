@@ -8,6 +8,7 @@ import CommandDraw from "./components/commandDraw";
 import SaveDialog from "./components/saveDialog";
 import { getLevel, getUseCommand, leveColors, transportdata } from "./utils";
 import styles from "./index.module.less";
+import { AxiosError, AxiosResponse } from "axios";
 
 // import { data as tagLe } from "./mock";
 
@@ -23,12 +24,12 @@ import styles from "./index.module.less";
 type PropsType = {
   projectId: string;
   fetchApi: {
-    getTreeData: (data: any) => Promise<Response>;
-    getAlltags: (data: any) => Promise<Response>;
-    getModulesList: (data: any) => Promise<Response>;
-    saveTree: (data: any) => Promise<Response>;
-    importTreeData: (data: any) => Promise<Response>;
-    [key: string]: (data: any) => Promise<Response>;
+    getTreeData: (data: any) => Promise<AxiosResponse>;
+    getAlltags: (data: any) => Promise<AxiosResponse>;
+    getModulesList: (data: any) => Promise<AxiosResponse>;
+    saveTree: (data: any) => Promise<AxiosResponse>;
+    importTreeData: (data: any) => Promise<AxiosResponse>;
+    [key: string]: (data: any) => Promise<AxiosResponse>;
   };
   isCem?: boolean;
   type: string;
@@ -73,8 +74,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
   >();
   const [zoom, SetZoom] = useState(100);
   const [selectNode, SetSelectNode] = useState<any[]>([]);
-
-  const disabledList: string[] = [];
+  const [disabledList, SetDisabledList] = useState<number[]>([]); // 不可选择的全局标签 指标
 
   // 获取树的数据 构造符合的结构
   const constructTree = () => {
@@ -119,6 +119,12 @@ const MinderPage: React.FC<PropsType> = (props) => {
     getAlltags({ projectId, id }).then((res) => {
       if (res.data.code === 20000) {
         SetTagList(res.data.result);
+        // 将此树里面用到的全局标签 指标 设为禁用状态
+        const disabledTags = res.data.result.flatMap(
+          (item: { id: number; isEnabled: boolean }) =>
+            item.isEnabled ? item.id : []
+        );
+        SetDisabledList(disabledTags);
       }
     });
   };
@@ -128,7 +134,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
     getModulesList({ projectId, id }).then((res) => {
       if (res.data.code === 20000) {
         const arr = res.data.result.length
-          ? res.data.result.map((item) => ({
+          ? res.data.result.map((item: { moduleName: string; id: number }) => ({
               ...item,
               label: item.moduleName,
               value: item.id,
@@ -205,7 +211,6 @@ const MinderPage: React.FC<PropsType> = (props) => {
 
   // 执行命令快捷键
   const excomand = (type: string, val?: any) => {
-    console.log("excomand", type, val);
     minderRef.current.editeorComand(type, val);
   };
 
@@ -216,12 +221,15 @@ const MinderPage: React.FC<PropsType> = (props) => {
       text,
       id,
       type: "GLOBAL", // GLOBAL,COMBINE
-      background: "f1f1f4",
+      // background: "#f1f1f4",
     };
-    console.log(data, "add gobal", selectNode[0].getLevel());
+    console.log(data, "add gobal");
     const shell = getUseCommand("插入子节点");
     excomand(shell.minderCommand as string, obj);
   };
+
+  //
+  const disabledTagsChange = (type: string, data: any) => {};
 
   useEffect(() => {
     fetchAllTags();
@@ -253,6 +261,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
             ref={minderRef}
             zoomChange={(zoom: number) => SetZoom(zoom)}
             selectionchange={(selectNode: any[]) => SetSelectNode(selectNode)}
+            disabledTagsChange={disabledTagsChange}
           />
         )}
       </div>

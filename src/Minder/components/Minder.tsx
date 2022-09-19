@@ -11,11 +11,11 @@ import {
 } from "react";
 import React from "react";
 import { OptionsType } from "../edit";
-import { Button, Col, Row, message } from "antd";
+import { message } from "antd";
 import { saveAs } from "file-saver";
 import EditNode from "./Editor/index";
 import styles from "../index.module.less";
-import { leveColors } from "../utils";
+import { leveColors, initNodeData } from "../utils";
 
 type PropsType = OptionsType & {
   defaultOptions?: object; //思维导图默认配置
@@ -23,6 +23,7 @@ type PropsType = OptionsType & {
   readonly?: boolean;
   zoomChange: (zoom) => void;
   selectionchange: (selectNode) => void;
+  disabledTagsChange: (type: string, data: object) => void;
 };
 
 const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
@@ -36,7 +37,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     zoomChange,
     selectionchange,
   } = props;
-  console.log(data, ref, "ccccc");
+  // console.log(data, ref, "ccccc");
   const kityRef = useRef(null);
   const [km, SetMinder] = useState();
 
@@ -62,7 +63,9 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
 
   const editeorComand = (type: string, value?: string | number) => {
     console.log(type, value);
-    km.queryCommandState(type) < 1 && km.execCommand(type, value);
+    if (km.queryCommandState(type) < 1) {
+      value ? km.execCommand(type, value) : km.execCommand(type);
+    }
   };
 
   const selectNode = (type: string) => {
@@ -181,17 +184,6 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
   //   }, 60);
   // };
 
-  const opeatorArea = (
-    <div>
-      <Row>
-        <Col>
-          <Button onClick={() => editNode()}>编辑</Button>
-          <Button onClick={() => editeorComand("resetlayout")}>整理布局</Button>
-        </Col>
-      </Row>
-    </div>
-  );
-
   // 一些事件监听
   useEffect(() => {
     if (km) {
@@ -202,25 +194,12 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
       // 执行命令前
       km.on("beforeExecCommand", (e) => {
         // 这里做一些判断 通过后继续执行指令
+        km.focus(); // 聚焦视图
         const { commandName, commandArgs } = e;
         const currentNodes = km.getSelectedNodes();
         const shouldStopPropagation = () => true; // 用于终止操作
 
         console.log(e, "execCommandTest", currentNodes);
-        // 插入父，子节点
-        if ("appendchildnode" === commandName) {
-          if (currentNodes[0].data.id) {
-            message.warning("不可添加子节点");
-            e.shouldStopPropagation = shouldStopPropagation;
-          }
-
-          if (
-            (currentNodes[0].data.level || currentNodes[0].getLevel()) === 7
-          ) {
-            message.warning("超出层级限制");
-            e.shouldStopPropagation = shouldStopPropagation;
-          }
-        }
 
         // 移动节点
         if ("movetoparent" === commandName) {
@@ -233,13 +212,47 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
 
         // 删除节点
         if ("removenode" === commandName) {
-          // message.warning("莫及节点");
+          //  message.warning("莫及节点");
           currentNodes.forEach((element) => {
             // 父级节点只有这一个子节点
             if (element.parent.children.length === 1) {
               e.shouldStopPropagation = shouldStopPropagation;
             }
           });
+        }
+
+        // 插入子节点
+        if ("appendchildnode" === commandName) {
+          if (commandArgs.length === 0) {
+            // 快捷键新增 给个默认数据 和颜色
+            const curLev = currentNodes[0].isRoot()
+              ? 1
+              : currentNodes[0].parent.getLevel() + 2;
+            const data = initNodeData(curLev);
+            e.commandArgs.push(data);
+          }
+          if (currentNodes[0].data.id) {
+            message.warning("不可添加子节点");
+            e.shouldStopPropagation = shouldStopPropagation;
+          }
+
+          if (
+            (currentNodes[0].data.level || currentNodes[0].getLevel()) === 7
+          ) {
+            message.warning("超出层级限制");
+            e.shouldStopPropagation = shouldStopPropagation;
+          }
+        }
+        // 插入同级节点
+        if ("appendsiblingnode" === commandName) {
+          if (commandArgs.length === 0) {
+            // 快捷键新增 未带
+            const curLev = currentNodes[0].isRoot()
+              ? 1
+              : currentNodes[0].parent.getLevel() + 1;
+            const data = initNodeData(curLev);
+            e.commandArgs.push(data);
+          }
         }
         return e;
       });
@@ -276,7 +289,6 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
   return (
     <div className={styles.minder_containter}>
       <div className={styles.contentbox}>
-        {/* {opeatorArea} */}
         <div
           ref={kityRef}
           type="application/kityminder"
@@ -284,18 +296,10 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
           style={{ height: "100%" }}
         ></div>
         <EditNode minder={km} canEdit={!readonly} />
-        <ul
-          className={styles.lev_popover}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
+        <ul className={styles.lev_popover}>
           {leveColors.map((background, index) => (
             <li
               onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
                 editeorComand("ExpandToLevel", index + 1);
               }}
               key={index}

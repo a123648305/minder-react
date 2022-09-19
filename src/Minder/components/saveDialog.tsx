@@ -39,7 +39,7 @@ const SaveDialog: React.FC<PropsType> = ({
       title="绑定模块"
       okText="确认"
       cancelText="取消"
-      open={visible}
+      visible={visible}
       onOk={handleOk}
       onCancel={() => {
         onCancel();
