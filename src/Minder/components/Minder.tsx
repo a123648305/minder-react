@@ -15,7 +15,7 @@ import { message } from "antd";
 import { saveAs } from "file-saver";
 import EditNode from "./Editor/index";
 import styles from "../index.module.less";
-import { leveColors, initNodeData } from "../utils";
+import { leveColors, initNodeData, exportTreeExcel } from "../utils";
 
 type PropsType = OptionsType & {
   defaultOptions?: object; //思维导图默认配置
@@ -70,15 +70,16 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
 
   const exportFn = async (type: "img" | "data") => {
     try {
+      const { root } = km.exportJson();
       if (type === "img") {
         const base64Data = await km.exportData("png");
-        saveAs(base64Data, "test.png");
+        saveAs(base64Data, `${root.data.text}.png`);
       } else {
-        const mindData = await km.exportData("json"); // text or json
-        const blob = new Blob([mindData], {
-          type: "text/plain;charset=utf-8",
-        });
-        saveAs(blob, "test.json");
+        try {
+          exportTreeExcel(root.children, root.data.text);
+        } catch (error) {
+          message.error(error.toString());
+        }
       }
     } catch (error) {
       console.log(error);

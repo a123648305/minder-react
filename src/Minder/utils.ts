@@ -1,3 +1,6 @@
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 type nodeDataType = {
   data: {
     id: number;
@@ -154,4 +157,42 @@ export const initNodeData = (lev: number, index?: number, tag?: boolean) => {
     background: "white",
   };
   return defaultNodeData;
+};
+/**
+ * 导出表格数据
+ * @param  {any[]} data   主体数据
+ * @param  {string} fileName 文件名
+ */
+export const exportTreeExcel = (data: any[], fileName: string) => {
+  const sheelArr: any[][] = [];
+  let maxLev = 1;
+  const transArr = (arr: any[], defaultRow = []) => {
+    arr.forEach((item) => {
+      let row: any = [...defaultRow, item.data.text];
+      if (item.children.length) {
+        row = transArr(item.children, row);
+      } else {
+        maxLev = Math.max(maxLev, row.length);
+        sheelArr.push(row);
+      }
+    });
+  };
+  transArr(data);
+
+  const header = new Array(maxLev)
+    .fill(0)
+    .map((k, index) => `${index + 1}级标签`);
+
+  const ws = XLSX.utils.aoa_to_sheet([header, ...sheelArr]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws);
+  const wbOut = XLSX.write(wb, {
+    bookType: "xlsx",
+    bookSST: true,
+    type: "array",
+  });
+  saveAs(
+    new Blob([wbOut], { type: "application/octet-stream" }),
+    `${fileName}.xlsx`
+  );
 };
