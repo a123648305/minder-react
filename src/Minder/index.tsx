@@ -147,13 +147,17 @@ const MinderPage: React.FC<PropsType> = (props) => {
 
   // 绑定模块
   const bindModule = async () => {
-    // await minderRef.current.validTree();
-    SetSaveForm({
-      title: curTitle,
-      moduleIds: id
-        ? editTreeData.current.blocksId.map((k: { id: number }) => k.id)
-        : [],
-    });
+    minderRef.current
+      .validTree()
+      .then((res: any) => {
+        SetSaveForm({
+          title: curTitle,
+          moduleIds: id
+            ? editTreeData.current.blocksId.map((k: { id: number }) => k.id)
+            : [],
+        });
+      })
+      .catch((err: any) => console.log(err, "err"));
   };
 
   // 保存数据

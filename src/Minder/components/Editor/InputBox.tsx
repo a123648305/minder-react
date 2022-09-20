@@ -39,6 +39,7 @@ const InputBox: React.FC<PropsType> = ({
   useEffect(() => {
     // 自动聚焦
     inputRef.current.focus();
+    inputRef.current.select();
   }, [defaultValue]);
 
   return (

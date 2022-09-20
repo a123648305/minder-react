@@ -1,12 +1,12 @@
-export function upperFirst(string) {
+export function upperFirst(string: string) {
   return string[0].toUpperCase() + string.substr(1);
 }
 
-export function getKeyCode(evt) {
+export function getKeyCode(evt: any) {
   return evt.keyCode || evt.witch;
 }
 
-export function isInputValue(e) {
+export function isInputValue(e: any) {
   const keyCode = getKeyCode(e);
 
   // a-zA-Z
@@ -21,7 +21,7 @@ export function isInputValue(e) {
   return false;
 }
 
-export function isIntendToInput(e) {
+export function isIntendToInput(e: any) {
   const keyCode = getKeyCode(e);
 
   if (e.ctrlKey || e.metaKey || e.altKey) return false;

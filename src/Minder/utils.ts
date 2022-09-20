@@ -134,7 +134,7 @@ export const transportdata = (data: any[]) => {
     if (type === "COMBINE") {
       // 组合标签 需要加颜色区分
       data["border-radius"] = 50;
-      data["border-color"] = leveColors[level];
+      data["border-color"] = leveColors[level - 1];
       data["background"] = "white";
     }
 
@@ -145,7 +145,7 @@ export const transportdata = (data: any[]) => {
 };
 
 /**初始化新节点的数据 */
-export const initNodeData = (lev: number, tag?: boolean) => {
+export const initNodeData = (lev: number, index?: number, tag?: boolean) => {
   const defaultNodeData = {
     text: `${lev}级标签`,
     type: "COMBINE",

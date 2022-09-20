@@ -1,6 +1,5 @@
-// @ts-nocheck
 import React, { useState, useEffect, useRef, useMemo, memo } from "react";
-import { getKeyCode, isInputValue, isIntendToInput } from "./utils";
+import { getKeyCode, isIntendToInput } from "./utils";
 import InputBox from "./InputBox";
 import "./index.css";
 import { message } from "antd";
@@ -15,10 +14,8 @@ type PropsType = {
 
 const EditorWrapper: React.FC<PropsType> = (props) => {
   const { canEdit, onEdit, minder, defaultValue } = props;
-  // console.log(props, "edit");
   const valueRef = useRef();
   const editingNodeRef = useRef();
-  const editorRef = useRef();
   const [initialValue, setInitialValue] = useState();
   const [editingNode, setEditingNode] = useState<{
     box: {
@@ -29,7 +26,7 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
     };
   }>();
 
-  const setEditorValue = (v) => {
+  const setEditorValue = (v: undefined) => {
     valueRef.current = v;
   };
 
@@ -42,8 +39,16 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
     setEditorEditingNode();
     minder.focus();
   };
-  const onSubmit = (...args) => {
+  const onSubmit = (...args: any[]) => {
+    //@ts-ignore
     const { node } = editingNodeRef.current || {};
+    minder.getRoot().traverse(function (node: any) {
+      if (!node.isRoot() && node.data.text === valueRef.current) {
+        message.warning("名称不能重复");
+        throw Error("名称不能重复");
+      }
+    });
+
     if (node && (!onEdit || (onEdit && onEdit(...args) !== false))) {
       node.setText(valueRef.current);
       minder.select(node, true);
@@ -56,10 +61,15 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
   };
 
   useEffect(() => {
-    const edit = (e) => {
+    const edit = (e: any) => {
       if (canEdit) {
         const node = minder.getSelectedNode();
         if (node) {
+          // 全局指标 标签 禁止编辑
+          if (node.data.id) {
+            return false;
+          }
+
           const box = node
             .getRenderer("OutlineRenderer")
             .getRenderShape()
@@ -71,14 +81,6 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
           };
           if (box.x > 0 || box.y > 0) {
             let value = text;
-            // editorRef.style = {
-            //   position: "absolute",
-            //   top: `${editingNode.box.y + editingNode.box.height / 2}px`,
-            //   left: `${editingNode.box.x}px`,
-            //   transform: "translateY(-50%)",
-            //   border: "1px solid red",
-            //   width: `${editingNode.box.width}`,
-            // };
             setEditorEditingNode(editingNode);
             setInitialValue(value || defaultValue);
             setEditorValue(value);
@@ -94,7 +96,7 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
     const keydownName = "keydown";
     const selectionchangeName = "selectionchange";
 
-    const keydownHandler = (e) => {
+    const keydownHandler = (e: { originEvent: any }) => {
       if (isIntendToInput(e.originEvent) && minder.getSelectedNode()) {
         edit(e);
       }
@@ -115,8 +117,9 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
   }, [minder, canEdit]);
 
   useEffect(() => {
-    const escHandler = (evt) => {
+    const escHandler = (evt: any) => {
       const keyCode = getKeyCode(evt);
+      //@ts-ignore
       if (keyCode === window.kityminder.KeyMap.esc) {
         exitEdit();
       }
@@ -130,18 +133,8 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
   const editFunction = useMemo(
     () =>
       editingNode ? (
-        <div
-          // style={{
-          //   position: "absolute",
-          //   top: 0,
-          //   bottom: 0,
-          //   left: 0,
-          //   right: 0,
-          // }}
-          onClick={onSubmit}
-        >
+        <div onClick={onSubmit}>
           <div
-            ref={editorRef}
             style={{
               position: "absolute",
               top: `${editingNode.box.y + editingNode.box.height / 2}px`,

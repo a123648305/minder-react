@@ -68,81 +68,6 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     }
   };
 
-  const selectNode = (type: string) => {
-    const minder = km;
-    switch (type) {
-      case "all":
-        var selection = [];
-        minder.getRoot().traverse(function (node) {
-          selection.push(node);
-        });
-        console.log(selection, "all");
-
-        minder.select(selection, true);
-        minder.fire("receiverfocus");
-        break;
-      case "revert":
-        var selected = minder.getSelectedNodes();
-        var selection = [];
-        minder.getRoot().traverse(function (node) {
-          if (selected.indexOf(node) == -1) {
-            selection.push(node);
-          }
-        });
-        minder.select(selection, true);
-        minder.fire("receiverfocus");
-        break;
-      case "siblings":
-        var selected = minder.getSelectedNodes();
-        var selection = [];
-        selected.forEach(function (node) {
-          if (!node.parent) return;
-          node.parent.children.forEach(function (sibling) {
-            if (selection.indexOf(sibling) == -1) selection.push(sibling);
-          });
-        });
-        minder.select(selection, true);
-        minder.fire("receiverfocus");
-        break;
-      case "level":
-        var selectedLevel = minder.getSelectedNodes().map(function (node) {
-          return node.getLevel();
-        });
-        var selection = [];
-        minder.getRoot().traverse(function (node) {
-          if (selectedLevel.indexOf(node.getLevel()) != -1) {
-            selection.push(node);
-          }
-        });
-        minder.select(selection, true);
-        minder.fire("receiverfocus");
-        break;
-      case "path":
-        var selected = minder.getSelectedNodes();
-        var selection = [];
-        selected.forEach(function (node) {
-          while (node && selection.indexOf(node) == -1) {
-            selection.push(node);
-            node = node.parent;
-          }
-        });
-        minder.select(selection, true);
-        minder.fire("receiverfocus");
-        break;
-      case "tree":
-        var selected = minder.getSelectedNodes();
-        var selection = [];
-        selected.forEach(function (parent) {
-          parent.traverse(function (node) {
-            if (selection.indexOf(node) == -1) selection.push(node);
-          });
-        });
-        minder.select(selection, true);
-        minder.fire("receiverfocus");
-        break;
-    }
-  };
-
   const exportFn = async (type: "img" | "data") => {
     try {
       if (type === "img") {
@@ -159,16 +84,6 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
       console.log(error);
     }
   };
-
-  // const editNode = () => {
-  //   var receiverElement = km.receiver.element;
-  //   var fsm = km.fsm;
-  //   var receiver = km.receiver;
-
-  //   receiverElement.innerText = km.queryCommandValue("text");
-  //   fsm.jump("input", "input-request");
-  //   receiver.selectAll();
-  // };
 
   // const searchNode = (node, previewKeyword) => {
   //   km.execCommand("camera", node, 50);
@@ -275,7 +190,15 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     editeorComand,
     validTree: () => {
       return new Promise((resolve, reject) => {
-        resolve(55);
+        km.getRoot().traverse(function (node) {
+          if (node.data.type === "COMBINE" && node.children?.length < 1) {
+            message.error("未选择末级指标");
+            // km.focus();
+            // km.select([node]);
+            reject("未选择末级指标");
+          }
+          resolve();
+        });
       });
     },
     getTreeData: () => {
