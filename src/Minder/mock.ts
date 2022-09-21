@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const getAlltags = () => {
   const data = {
     code: 20000,
@@ -10,12 +12,12 @@ export const getAlltags = () => {
       },
       {
         id: 5,
-        isEnabled: true,
+        isEnabled: false,
         text: "标签2",
       },
       {
         id: 8,
-        isEnabled: true,
+        isEnabled: false,
         text: "测试",
       },
       {
@@ -273,4 +275,11 @@ export const getModulesList = () => {
     ],
   };
   return Promise.resolve({ data });
+};
+
+export const importTreeData = (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("projectId", "12000");
+  return axios.post("/overall-aspect/upload/data", formData);
 };

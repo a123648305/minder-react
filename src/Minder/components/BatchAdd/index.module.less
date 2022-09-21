@@ -1,0 +1,208 @@
+@tip_color: #8c8c8c;
+@title_color: #262626;
+@background_color2: #fafafa;
+@placeholder_color: #bfbfbf;
+@main_color: #7262fd;
+@border_color: #e5e5e5;
+@white_color: #fff;
+@link_color1: #1890ff;
+@link_color4: #5b8ff9;
+.batch_add_dialog {
+  :global {
+    .ant-modal-header {
+      border: none;
+      .ant-modal-title {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 24px;
+      }
+    }
+    .ant-modal-body {
+      padding-bottom: 16px;
+    }
+    .ant-modal-footer {
+      padding-bottom: 16px;
+      border: none;
+    }
+    .steps_warper {
+      display: flex;
+      justify-content: center;
+      width: 684px;
+      margin: 0 auto;
+      &::after {
+        display: block;
+        clear: both;
+        height: 0;
+        visibility: hidden;
+        content: "";
+      }
+      .setps_item {
+        position: relative;
+        float: left;
+        width: 33%;
+        text-align: center;
+        .steps_item_circle {
+          color: @tip_color;
+          span {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            color: @placeholder_color;
+            font-size: 24px;
+            line-height: 32px;
+            background: @background_color2;
+            border: 1px solid @placeholder_color;
+            border-radius: 50%;
+          }
+          p {
+            margin-top: 12px;
+            color: @title_color;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 20px;
+          }
+        }
+
+        &:last-child,
+        &:nth-child(2) {
+          &::after {
+            position: absolute;
+            top: 18px;
+            left: -80px;
+            width: 160px;
+            height: 0;
+            border-bottom: 1px solid @border_color;
+            content: "";
+          }
+        }
+
+        &.sel {
+          color: @title_color;
+          span {
+            color: @white_color;
+            font-weight: bold;
+            background: @main_color;
+            border: unset;
+          }
+          p {
+            color: @main_color;
+          }
+        }
+      }
+    }
+    .upload_wrap {
+      position: relative;
+      width: 440px !important;
+      height: 260px !important;
+      margin: 0 auto;
+      margin-top: 34px;
+      padding-bottom: 16px;
+      background: @background_color2;
+      border: 1px solid red;
+      border: 1px dashed @border_color;
+      border-radius: 4px;
+      .upload {
+        text-align: center;
+        > .add {
+          margin: 0 auto 20px;
+          cursor: pointer;
+        }
+        b {
+          display: inline-block;
+          margin-bottom: 16px;
+          color: @title_color;
+          font-weight: 600;
+          font-size: 16px;
+          line-height: 22px;
+          span {
+            color: @link_color4;
+            cursor: pointer;
+          }
+        }
+        .download_template {
+          display: table;
+          margin: 0 auto;
+          color: @link_color4;
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 20px;
+          cursor: pointer;
+        }
+        .accept {
+          position: absolute;
+          bottom: 16px;
+          width: 100%;
+          color: @tip_color;
+          font-size: 12px;
+        }
+      }
+    }
+    .result_wrapper {
+      .result_faile_text {
+        color: @link_color1;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        cursor: pointer;
+      }
+      .result_tip_text {
+        width: 350px;
+        margin: 0 auto;
+        color: @tip_color;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        text-align: left;
+      }
+    }
+
+    .file_name {
+      width: 100%;
+      margin: 0 auto;
+      padding-top: 40px;
+      line-height: 20px;
+      text-align: center;
+      > div {
+        margin: 16px 0 26px 0;
+        color: @title_color;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+      > span {
+        width: 56px;
+        color: @link_color4;
+        font-weight: 400;
+        line-height: 20px;
+        cursor: pointer;
+      }
+    }
+
+    .step2_wrap {
+      width: 360px;
+      height: 266px;
+      margin: 28px auto 0;
+      h3 {
+        height: 22px;
+        margin-bottom: 16px;
+        color: @title_color;
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 22px;
+      }
+      & > div {
+        width: 360px;
+        margin-bottom: 12px;
+      }
+      p {
+        color: @tip_color;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: 0;
+        text-align: left;
+      }
+    }
+  }
+}

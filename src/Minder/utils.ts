@@ -124,13 +124,14 @@ export const getLevel = (data: any[], initLevel = 1) => {
   let level = initLevel;
   data.forEach((item: any) => {
     if (item.children.length) {
-      level = getLevel(item.children, level + 1);
+      level = Math.max(getLevel(item.children, initLevel + 1), level);
     }
   });
   return level;
 };
 
-export const transportdata = (data: any[]) => {
+/**将后端返回的数据转成插件的数据结构 */
+export const transportRevertdata = (data: any[]) => {
   const arr: nodeDataType[] = [];
   data.forEach(({ id, text, type, level, children: child }) => {
     const data: any = { id, text, type, level };
@@ -141,8 +142,18 @@ export const transportdata = (data: any[]) => {
       data["background"] = "white";
     }
 
-    const children = child ? transportdata(child) : [];
+    const children = child ? transportRevertdata(child) : [];
     arr.push({ data, children });
+  });
+  return arr;
+};
+
+/**将插件的数据转成后端需要的数据结构 */
+export const transportdata = (sdata: nodeDataType[]) => {
+  const arr: any[] = [];
+  sdata.forEach(({ data, children: child }) => {
+    const children = child ? transportdata(child) : [];
+    arr.push({ ...data, children });
   });
   return arr;
 };

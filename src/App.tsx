@@ -3,7 +3,12 @@
 import "./App.css";
 import "./assets/iconfont/iconfont.css";
 import MinderPage from "./Minder";
-import { getModulesList, getTreeData, getAlltags } from "./Minder/mock";
+import {
+  getModulesList,
+  getTreeData,
+  getAlltags,
+  importTreeData,
+} from "./Minder/mock";
 
 const App = () => {
   return (
@@ -14,11 +19,8 @@ const App = () => {
           getModulesList,
           getTreeData,
           getAlltags,
+          importTreeData,
           saveTree: (data) =>
-            fetch(
-              "https://ironfist.fat.yuntingai.com/api/ironfist/newBusinessTag/usabletTag/fa5cf22f6a154d66993611e7974a7c19?businessId=111"
-            ),
-          importTreeData: (data) =>
             fetch(
               "https://ironfist.fat.yuntingai.com/api/ironfist/newBusinessTag/usabletTag/fa5cf22f6a154d66993611e7974a7c19?businessId=111"
             ),
@@ -26,6 +28,7 @@ const App = () => {
         type="tag"
         readonly={false}
         title="222222222222"
+        // id="10"
       ></MinderPage>
     </div>
   );

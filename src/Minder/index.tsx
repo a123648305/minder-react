@@ -6,7 +6,14 @@ import MinderContainer from "./components/Minder";
 import MinderTagsDraw from "./components/tagDraw";
 import CommandDraw from "./components/commandDraw";
 import SaveDialog from "./components/saveDialog";
-import { getLevel, getUseCommand, leveColors, transportdata } from "./utils";
+import BatchAdd from "./components/BatchAdd";
+import {
+  getLevel,
+  getUseCommand,
+  leveColors,
+  transportdata,
+  transportRevertdata,
+} from "./utils";
 import styles from "./index.module.less";
 import { AxiosError, AxiosResponse } from "axios";
 
@@ -75,6 +82,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
   const [zoom, SetZoom] = useState(100);
   const [selectNode, SetSelectNode] = useState<any[]>([]);
   const [disabledList, SetDisabledList] = useState<number[]>([]); // 不可选择的全局标签 指标
+  const [uploadVisible, SetuploadVisible] = useState(false);
 
   // 获取树的数据 构造符合的结构
   const constructTree = () => {
@@ -96,7 +104,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
               data: {
                 text: businessPoint.name,
               },
-              children: transportdata(treeData),
+              children: transportRevertdata(treeData),
             },
           };
           console.log("tree data ====>", editTree);
@@ -168,7 +176,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
     const params = {
       businessPointId: id,
       businessPointName: title,
-      datas: children,
+      datas: transportdata(children),
       level: children.length ? getLevel(children) : 0,
       projectId,
       moduleIds,
@@ -247,7 +255,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
         title={curTitle}
         saveStatus={false}
         exictPage={exictClick}
-        importData={importData}
+        importData={() => SetuploadVisible(true)}
         saveData={bindModule}
         exportData={exportData}
         excomand={excomand}
@@ -282,6 +290,32 @@ const MinderPage: React.FC<PropsType> = (props) => {
         modeOptions={moduleList}
         onOK={saveTreeData}
         onCancel={() => SetSaveForm(undefined)}
+      />
+      <BatchAdd
+        width={960}
+        title="上传标签树"
+        visible={uploadVisible}
+        failedFileUrl=""
+        templateUrl=""
+        stepsList={[
+          {
+            value: 1,
+            label: "选择表格",
+          },
+          {
+            value: 2,
+            label: "导入结果",
+          },
+        ]}
+        templateTip="（只支持xlsx格式，每次只能上传1个树结构）"
+        resultDesc={{
+          title: "导入成功",
+          subTitle: "",
+          status: "success",
+        }}
+        onCancel={() => SetuploadVisible(false)}
+        onUploadSucess={(daa) => console.log(daa, "daa")}
+        onUploadFile={importTreeData}
       />
     </div>
   );
