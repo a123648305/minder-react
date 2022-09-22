@@ -141,6 +141,10 @@ export const transportRevertdata = (data: any[]) => {
       data["border-color"] = leveColors[level - 1];
       data["background"] = "white";
     }
+    if (type === "GLOBAL") {
+      // 禁止增加子节点
+      data.notAppend = true;
+    }
 
     const children = child ? transportRevertdata(child) : [];
     arr.push({ data, children });

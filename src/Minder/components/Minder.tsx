@@ -50,10 +50,9 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
       km.setup(kityRef.current);
       if (readonly) {
         km.disable();
-        //km.execCommand("hand");
-      } else {
-        SetMinder(km);
+        km.execCommand("hand");
       }
+      SetMinder(km);
     }
   }, [kityRef]);
 
@@ -61,9 +60,12 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     km && km.importJson(data);
   }, [data]);
 
-  const editeorComand = (type: string, value?: string | number) => {
-    console.log(type, value);
-    if (km.queryCommandState(type) < 1) {
+  const editeorComand = (
+    type: string,
+    value?: string | number,
+    special?: boolean
+  ) => {
+    if (special || km.queryCommandState(type) < 1) {
       value ? km.execCommand(type, value) : km.execCommand(type);
     }
   };
@@ -119,11 +121,19 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
 
         // 移动节点
         if ("movetoparent" === commandName) {
-          const [targetNode] = commandArgs[0];
-          if (targetNode.data.id) {
-            // message.warning("不可移动到此节点下");
+          const targetNode = commandArgs[1];
+          if (targetNode.data.notAppend) {
+            message.warning("不可移动到此节点下");
             e.shouldStopPropagation = shouldStopPropagation;
+            return e;
           }
+          currentNodes.forEach((element) => {
+            // 父级节点只有这一个子节点
+            if (element.parent.children.length === 1) {
+              e.shouldStopPropagation = shouldStopPropagation;
+              return e;
+            }
+          });
         }
 
         // 删除节点
@@ -133,6 +143,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
             // 父级节点只有这一个子节点
             if (element.parent.children.length === 1) {
               e.shouldStopPropagation = shouldStopPropagation;
+              return e;
             }
           });
         }
@@ -147,9 +158,10 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
             const data = initNodeData(curLev);
             e.commandArgs.push(data);
           }
-          if (currentNodes[0].data.id) {
+          if (currentNodes[0].data.notAppend) {
             message.warning("不可添加子节点");
             e.shouldStopPropagation = shouldStopPropagation;
+            return e;
           }
 
           if (
@@ -157,6 +169,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
           ) {
             message.warning("超出层级限制");
             e.shouldStopPropagation = shouldStopPropagation;
+            return e;
           }
         }
         // 插入同级节点
@@ -224,7 +237,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
           {leveColors.map((background, index) => (
             <li
               onClick={(e) => {
-                editeorComand("ExpandToLevel", index + 1);
+                editeorComand("ExpandToLevel", index + 1, true);
               }}
               key={index}
             >

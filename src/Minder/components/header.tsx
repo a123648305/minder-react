@@ -122,10 +122,10 @@ const MinderHeader: React.FC<PropsType> = ({
         </div>
       </div>
       <div className={styles.header_right}>
-        <Button type="default" onClick={() => importData()}>
+        <Button type="default" onClick={() => importData()} disabled={readonly}>
           导入
         </Button>
-        <Button type="primary" onClick={() => saveData()}>
+        <Button type="primary" onClick={() => saveData()} disabled={readonly}>
           保存
         </Button>
         <div className={styles.export}>

@@ -1,4 +1,4 @@
-import { Spin, Modal } from "antd";
+import { Spin, Modal, message } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 import MinderHeader from "./components/header";
@@ -191,6 +191,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
           SetTitle(title);
         }
         SetSaveForm(undefined);
+        message.success("保存成功");
       }
     });
   };
@@ -217,23 +218,24 @@ const MinderPage: React.FC<PropsType> = (props) => {
 
   // 导出数据 图片
   const exportData = (type: "img" | "data") => {
-    console.log(minderRef.current, "ccxzzc");
     minderRef.current.exportFn(type);
   };
 
-  // 执行命令快捷键
-  const excomand = (type: string, val?: any) => {
-    minderRef.current.editeorComand(type, val);
+  // 执行命令快捷键 special：任意时刻可执行的命令
+  const excomand = (type: string, val?: any, special?: boolean) => {
+    minderRef.current.editeorComand(type, val, special);
   };
 
   // 增加全局指标、标签 节点
   const addGobalNode = (data: { id: number; text: string }) => {
+    if (readonly) return;
     const { id, text } = data;
     const obj = {
       text,
       id,
       type: "GLOBAL", // GLOBAL,COMBINE
       // background: "#f1f1f4",
+      notAppend: true, // 禁止增加子节点
     };
     console.log(data, "add gobal");
     const shell = getUseCommand("插入子节点");
