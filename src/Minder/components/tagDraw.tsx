@@ -42,7 +42,7 @@ const MinderTagsDraw: React.FC<PropsType> = ({
   };
 
   const openTagsDraw = () => {
-    if (selectNode.length !== 1 || selectNode[0].getLevel() === 6) return;
+    // if (selectNode.length !== 1 || selectNode[0].getLevel() === 6) return;
     SetOpen(true);
   };
 

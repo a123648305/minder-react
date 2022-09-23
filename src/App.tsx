@@ -10,7 +10,7 @@ import {
   importTreeData,
 } from "./Minder/mock";
 
-const App = () => {
+const App = (props) => {
   return (
     <div className="App">
       <MinderPage
@@ -28,7 +28,6 @@ const App = () => {
         type="tag"
         readonly={false}
         title="222222222222"
-        // id="10"
       ></MinderPage>
     </div>
   );

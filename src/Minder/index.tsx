@@ -161,7 +161,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
         SetSaveForm({
           title: curTitle,
           moduleIds: id
-            ? editTreeData.current.blocksId.map((k: { id: number }) => k.id)
+            ? editTreeData.current.blocks.map((k: { id: number }) => k.id)
             : [],
         });
       })
@@ -228,7 +228,13 @@ const MinderPage: React.FC<PropsType> = (props) => {
 
   // 增加全局指标、标签 节点
   const addGobalNode = (data: { id: number; text: string }) => {
+    console.log(selectNode, "g");
     if (readonly) return;
+    if (selectNode.length !== 1 || selectNode[0].getLevel() === 6) {
+      message.warning("请先选择一个节点");
+      return;
+    }
+
     const { id, text } = data;
     const obj = {
       text,
@@ -242,8 +248,10 @@ const MinderPage: React.FC<PropsType> = (props) => {
     excomand(shell.minderCommand as string, obj);
   };
 
-  //
-  const disabledTagsChange = (type: string, data: any) => {};
+  // 同步更新不可选的全局标签 指标状态
+  const disabledTagsChange = (data: number[]) => {
+    SetDisabledList(data);
+  };
 
   useEffect(() => {
     fetchAllTags();
@@ -272,6 +280,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
           <MinderContainer
             readonly={readonly}
             data={treeData}
+            tagList={tagList}
             ref={minderRef}
             zoomChange={(zoom: number) => SetZoom(zoom)}
             selectionchange={(selectNode: any[]) => SetSelectNode(selectNode)}

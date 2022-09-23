@@ -1,7 +1,7 @@
 // @ts-nocheck
-import "./minderDist/kityminder.core.css";
-import "./minderDist/kity.min";
-import "./minderDist/kityminder.core.min";
+import "kityminder-core-extend/dist/kityminder.core.css";
+import "kity";
+import "kityminder-core-extend";
 import {
   forwardRef,
   useEffect,
@@ -20,10 +20,12 @@ import { leveColors, initNodeData, exportTreeExcel } from "../utils";
 type PropsType = OptionsType & {
   defaultOptions?: object; //思维导图默认配置
   data: object;
+  tagList?: { id: number; isEnabled: boolean; text: string }[];
   readonly?: boolean;
   zoomChange: (zoom) => void;
   selectionchange: (selectNode) => void;
-  disabledTagsChange: (type: string, data: object) => void;
+  disabledTagsChange: (data) => void;
+  changeTitle: (title: string) => void;
 };
 
 const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
@@ -31,11 +33,15 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     defaultOptions = {
       zoom: [25, 50, 75, 100, 125, 175, 200],
       defaultTheme: "normal",
+      notAutoCamera: true,
     },
     readonly,
     data,
+    tagList = [],
     zoomChange,
     selectionchange,
+    disabledTagsChange,
+    changeTitle,
   } = props;
   // console.log(data, ref, "ccccc");
   const kityRef = useRef(null);
@@ -101,6 +107,16 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
   //     }
   //   }, 60);
   // };
+
+  const apendFn = () => {
+    const afterAppend = () => {
+      // runtime.editText();
+      console.log("fofoofofof");
+      km.fire("editNode");
+      km.off("layoutallfinish", afterAppend);
+    };
+    km.on("layoutallfinish", afterAppend);
+  };
 
   // 一些事件监听
   useEffect(() => {
@@ -171,6 +187,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
             e.shouldStopPropagation = shouldStopPropagation;
             return e;
           }
+          apendFn();
         }
         // 插入同级节点
         if ("appendsiblingnode" === commandName) {
@@ -182,13 +199,26 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
             const data = initNodeData(curLev);
             e.commandArgs.push(data);
           }
+          apendFn();
         }
         return e;
       });
-
       km.on("selectionchange", (e) => {
         const selNode = km.getSelectedNodes() || [];
+        console.log(selNode, "dx");
         selectionchange(selNode);
+      });
+      km.on("contentchange", (e) => {
+        const disabled = [];
+        km.getRoot().traverse(function (mnode) {
+          if (mnode.isRoot()) {
+            changeTitle(mnode.data.text);
+          }
+          if (mnode.data.notAppend) {
+            disabled.push(mnode.data.id);
+          }
+        });
+        disabledTagsChange(disabled);
       });
     }
     return () => {
@@ -232,7 +262,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
           minder-data-type="json"
           style={{ height: "100%" }}
         ></div>
-        <EditNode minder={km} canEdit={!readonly} />
+        <EditNode minder={km} canEdit={!readonly} tagList={tagList} />
         <ul className={styles.lev_popover}>
           {leveColors.map((background, index) => (
             <li

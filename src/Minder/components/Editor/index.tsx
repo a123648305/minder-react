@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, memo } from "react";
 import { getKeyCode, isIntendToInput } from "./utils";
 import InputBox from "./InputBox";
-import "./index.css";
 import { message } from "antd";
 
 type PropsType = {
@@ -9,6 +8,7 @@ type PropsType = {
   canEdit: boolean;
   onEdit?: Function;
   minder: any;
+  tagList: { id: number; isEnabled: boolean; text: string }[];
   defaultValue?: string;
 };
 
@@ -16,6 +16,7 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
   const { canEdit, onEdit, minder, defaultValue } = props;
   const valueRef = useRef();
   const editingNodeRef = useRef();
+  const inputBoxRef = useRef<any>();
   const [initialValue, setInitialValue] = useState();
   const [editingNode, setEditingNode] = useState<{
     box: {
@@ -45,6 +46,7 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
     minder.getRoot().traverse(function (node: any) {
       if (!node.isRoot() && node.data.text === valueRef.current) {
         message.warning("名称不能重复");
+        inputBoxRef.current.autoFocus();
         throw Error("名称不能重复");
       }
     });
@@ -66,7 +68,7 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
         const node = minder.getSelectedNode();
         if (node) {
           // 全局指标 标签 禁止编辑
-          if (node.data.id) {
+          if (node.data.notAppend) {
             return false;
           }
 
@@ -150,6 +152,8 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
               onChange={setEditorValue}
               onCancel={exitEdit}
               width={editingNode.box.width}
+              maxLength={20}
+              ref={inputBoxRef}
             />
           </div>
         </div>

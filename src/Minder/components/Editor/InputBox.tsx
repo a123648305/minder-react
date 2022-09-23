@@ -1,21 +1,31 @@
-import React, { useEffect, useRef } from "react";
+import React, {
+  forwardRef,
+  Ref,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import { getKeyCode } from "./utils";
 
 type PropsType = {
   defaultValue?: string;
   width?: number;
+  maxLength?: number;
   onSubmit: Function;
   onChange: Function;
   onCancel: Function;
+  ref: any;
 };
 
-const InputBox: React.FC<PropsType> = ({
-  defaultValue,
-  onChange,
-  onSubmit,
-  onCancel,
-  width = 120,
-}) => {
+const InputBox: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
+  const {
+    defaultValue,
+    onChange,
+    onSubmit,
+    onCancel,
+    maxLength = 100,
+    width = 120,
+  } = props;
   const inputRef = useRef<any>();
 
   const onKeydown = (evt: any) => {
@@ -37,26 +47,36 @@ const InputBox: React.FC<PropsType> = ({
   };
 
   useEffect(() => {
-    // 自动聚焦
+    autoFocus();
+  }, [defaultValue]);
+
+  // 自动聚焦
+  const autoFocus = () => {
+    console.log(9);
     inputRef.current.focus();
     inputRef.current.select();
-  }, [defaultValue]);
+  };
+
+  useImperativeHandle(ref, () => ({
+    autoFocus,
+  }));
 
   return (
     <input
       ref={inputRef}
       defaultValue={defaultValue}
+      maxLength={maxLength}
       onChange={onInputChange}
       onKeyDown={onKeydown}
       onBlur={(e) => onSubmit(e)}
       style={{
         width,
-        border: "none",
-        outline: "none",
+        // border: "none",
+        // outline: "none",
         paddingLeft: 5,
       }}
     />
   );
-};
+});
 
 export default InputBox;
