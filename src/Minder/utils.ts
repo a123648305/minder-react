@@ -211,3 +211,58 @@ export const exportTreeExcel = (data: any[], fileName: string) => {
     `${fileName}.xlsx`
   );
 };
+
+/**
+ * 判断树里的数据是否有重复的文本 排除根节点
+ * @param  {any} minder
+ * @param  {any} reNode
+ */
+export const vaildTreeRepeat = (
+  minder: any,
+  reNode?: { text: string; nid: number }
+) => {
+  console.log(999);
+  const existNode = new Set();
+  const arr = minder.getAllNode();
+  for (let i = 0; i < arr.length; i++) {
+    const { text, nid } = arr[i].data;
+    if (arr[i].type === "root") continue;
+    if (existNode.has(text) && !reNode) {
+      return true;
+    }
+    // 非当前创建的节点 重复
+    if (reNode && reNode.nid !== nid && reNode.text === text) {
+      return true;
+    }
+    existNode.add(text);
+  }
+  return false;
+};
+
+/**
+ * 拖动后 更新node 信息
+ * @param  {} dragNodes  拖动的节点
+ * @param  {} targetNode 目标节点
+ */
+export const dragNodesUpdate = (dragNodes: any[], targetNode: any) => {
+  const lev = targetNode.getLevel() + 1;
+  console.log(85);
+  const updateNodes = (nodes: any[], curLev = 0) => {
+    nodes.forEach((node: any) => {
+      if (node.data.type === "COMBINE") {
+        // 组合标签 需要加颜色区分
+        node.setData({
+          "border-radius": 50,
+          "border-color": leveColors[lev + curLev - 1],
+          background: "white",
+        });
+      }
+      if (node.children.length) {
+        updateNodes(node.children, curLev + 1);
+      }
+    });
+  };
+  updateNodes(dragNodes);
+
+  console.log(dragNodes, "vvv");
+};

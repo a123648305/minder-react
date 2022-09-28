@@ -15,7 +15,13 @@ import { message } from "antd";
 import { saveAs } from "file-saver";
 import EditNode from "./Editor/index";
 import styles from "../index.module.less";
-import { leveColors, initNodeData, exportTreeExcel } from "../utils";
+import {
+  leveColors,
+  initNodeData,
+  exportTreeExcel,
+  vaildTreeRepeat,
+  dragNodesUpdate,
+} from "../utils";
 
 type PropsType = OptionsType & {
   defaultOptions?: object; //思维导图默认配置
@@ -25,7 +31,7 @@ type PropsType = OptionsType & {
   zoomChange: (zoom) => void;
   selectionchange: (selectNode) => void;
   disabledTagsChange: (data) => void;
-  changeTitle: (title: string) => void;
+  changeTitle: (text: string) => void;
 };
 
 const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
@@ -120,6 +126,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
 
   // 一些事件监听
   useEffect(() => {
+    console.log(km, ",,,");
     if (km) {
       // 放大缩小
       km.on("zoom", (e) => {
@@ -135,33 +142,45 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
 
         console.log(e, "execCommandTest", currentNodes);
 
+        message.destroy();
+
+        if (vaildTreeRepeat(km)) {
+          console.log("repeat");
+          e.shouldStopPropagation = shouldStopPropagation;
+          return e;
+        }
+
         // 移动节点
         if ("movetoparent" === commandName) {
           const targetNode = commandArgs[1];
+          let dragNodes = commandArgs[0];
           if (targetNode.data.notAppend) {
             message.warning("不可移动到此节点下");
             e.shouldStopPropagation = shouldStopPropagation;
             return e;
           }
-          currentNodes.forEach((element) => {
-            // 父级节点只有这一个子节点
-            if (element.parent.children.length === 1) {
-              e.shouldStopPropagation = shouldStopPropagation;
-              return e;
-            }
-          });
+          // currentNodes.forEach((element) => {
+          //   // 父级节点只有这一个子节点
+          //   if (element.parent.children.length === 1) {
+          //     e.shouldStopPropagation = shouldStopPropagation;
+          //     return e;
+          //   }
+          // });
+
+          // 拖动节点 更新对应的信息 如颜色等
+          dragNodesUpdate(dragNodes, targetNode);
         }
 
         // 删除节点
         if ("removenode" === commandName) {
           //  message.warning("莫及节点");
-          currentNodes.forEach((element) => {
-            // 父级节点只有这一个子节点
-            if (element.parent.children.length === 1) {
-              e.shouldStopPropagation = shouldStopPropagation;
-              return e;
-            }
-          });
+          // currentNodes.forEach((element) => {
+          //   // 父级节点只有这一个子节点
+          //   if (element.parent.children.length === 1) {
+          //     e.shouldStopPropagation = shouldStopPropagation;
+          //     return e;
+          //   }
+          // });
         }
 
         // 插入子节点
@@ -203,9 +222,9 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
         }
         return e;
       });
+
       km.on("selectionchange", (e) => {
         const selNode = km.getSelectedNodes() || [];
-        console.log(selNode, "dx");
         selectionchange(selNode);
       });
       km.on("contentchange", (e) => {
@@ -240,9 +259,10 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
             // km.focus();
             // km.select([node]);
             reject("未选择末级指标");
+            throw Error("未选择末级指标");
           }
-          resolve();
         });
+        resolve(true);
       });
     },
     getTreeData: () => {
@@ -250,6 +270,9 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     },
     getSelectionData: () => {
       km.exportJson();
+    },
+    getSelectNode: () => {
+      return km.getSelectedNodes();
     },
   }));
 

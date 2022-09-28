@@ -28,6 +28,7 @@ const App = (props) => {
         type="tag"
         readonly={false}
         title="222222222222"
+        id="11"
       ></MinderPage>
     </div>
   );

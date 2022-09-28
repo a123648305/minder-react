@@ -1,9 +1,9 @@
-import { Button, Popover } from "antd";
-import { memo, useCallback, useState } from "react";
-import { getUseCommands, getUseCommand } from "../utils";
-import styles from "../index.module.less";
+import { Button, Popover } from 'antd';
+import { memo, useCallback, useState } from 'react';
+import { getUseCommands, getUseCommand } from '../utils';
+import styles from '../index.module.less';
 
-const classNames = require("classnames");
+const classNames = require('classnames');
 
 type PropsType = {
   title: string;
@@ -14,7 +14,7 @@ type PropsType = {
   exictPage: () => void;
   importData: () => void;
   saveData: () => void;
-  exportData: (type: "img" | "data") => void;
+  exportData: (type: 'img' | 'data') => void;
   excomand: (key: string) => void;
 };
 
@@ -31,16 +31,11 @@ const MinderHeader: React.FC<PropsType> = ({
   readonly,
 }) => {
   const [headerOpeatorIcon] = useState(
-    getUseCommands(["撤销", "重做", "插入子节点", "插入同级节点", "删除节点"])
+    getUseCommands(['撤销', '重做', '插入子节点', '插入同级节点', '删除节点'])
   );
 
   const commandKey = useCallback(
-    (data: {
-      icon: string;
-      label: string;
-      commandkey: string[];
-      minderCommand?: string;
-    }) => {
+    (data: { icon: string; label: string; commandkey: string[]; minderCommand?: string }) => {
       const keysDom = (keys: string[], suffixkey: string) => {
         const dom: React.ReactNode[] = [];
         keys.forEach((element, index) => {
@@ -72,17 +67,13 @@ const MinderHeader: React.FC<PropsType> = ({
           placement="bottom"
         >
           <i
-            className={classNames("icon", "iconfont", data.icon, {
+            className={classNames('icon', 'iconfont', data.icon, {
               [styles.comand_disabled]: readonly || !isChecked,
             })}
             onClick={() => {
               if (data.minderCommand && !readonly) {
                 // 选中了节点才给操作
-                if (
-                  ["插入子节点", "插入同级节点", "删除节点"].includes(
-                    data.label
-                  )
-                ) {
+                if (['插入子节点', '插入同级节点', '删除节点'].includes(data.label)) {
                   isChecked && excomand(data.minderCommand);
                 } else {
                   excomand(data.minderCommand);
@@ -100,25 +91,20 @@ const MinderHeader: React.FC<PropsType> = ({
     <div className={styles.minder_header}>
       <div className={styles.header_left}>
         <Popover content="退出" placement="bottom">
-          <i
-            className="icon iconfont icon-tuichu"
-            onClick={() => exictPage()}
-          />
+          <i className="icon iconfont icon-tuichu" onClick={() => exictPage()} />
         </Popover>
         <span className={styles.title}>{title}</span>
-        <div className={styles.save_tip}>
+        {/* <div className={styles.save_tip}>
           <i className="icon iconfont icon-baocunzhuangtai" />
           <span>{saveStatus ? "未保存" : "已保存"}</span>
-        </div>
+        </div> */}
       </div>
       <div className={styles.header_mid}>
-        <div className={styles.opeator}>
-          {headerOpeatorIcon.map((item) => commandKey(item))}
-        </div>
+        <div className={styles.opeator}>{headerOpeatorIcon.map((item) => commandKey(item))}</div>
         <div className={styles.zoom}>
-          {commandKey(getUseCommand("画布缩小"))}
+          {commandKey(getUseCommand('画布缩小'))}
           <span>{zoom}%</span>
-          {commandKey(getUseCommand("画布放大"))}
+          {commandKey(getUseCommand('画布放大'))}
         </div>
       </div>
       <div className={styles.header_right}>
@@ -130,16 +116,10 @@ const MinderHeader: React.FC<PropsType> = ({
         </Button>
         <div className={styles.export}>
           <Popover content="导出图片" placement="bottom">
-            <i
-              className="icon iconfont icon-daochutupian1"
-              onClick={() => exportData("img")}
-            />
+            <i className="icon iconfont icon-daochutupian1" onClick={() => exportData('img')} />
           </Popover>
           <Popover content="导出表格" placement="bottom">
-            <i
-              className="icon iconfont icon-daochubiaoge"
-              onClick={() => exportData("data")}
-            />
+            <i className="icon iconfont icon-daochubiaoge" onClick={() => exportData('data')} />
           </Popover>
         </div>
       </div>

@@ -1,0 +1,21 @@
+.bind_module {
+  .ant-select-selection-item {
+    margin-right: 6px !important;
+    padding: 0 6px !important;
+  }
+}
+.bind_module_select {
+  &.ant-select-item-option-selected {
+    color: @primary-color !important;
+    background-color: #fff !important;
+    font-weight: 400 !important;
+  }
+  &.ant-select-item-option-active {
+    &:hover {
+      background-color: @color-primary-light-hover !important;
+    }
+  }
+  &.ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+    background-color: #fff;
+  }
+}

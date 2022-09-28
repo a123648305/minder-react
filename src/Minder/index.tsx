@@ -5,8 +5,6 @@ import MinderHeader from "./components/header";
 import MinderContainer from "./components/Minder";
 import MinderTagsDraw from "./components/tagDraw";
 import CommandDraw from "./components/commandDraw";
-import SaveDialog from "./components/saveDialog";
-import BatchAdd from "./components/BatchAdd";
 import {
   getLevel,
   getUseCommand,
@@ -16,6 +14,7 @@ import {
 } from "./utils";
 import styles from "./index.module.less";
 import { AxiosError, AxiosResponse } from "axios";
+// import { Prompt } from 'react-router-dom';
 
 // import { data as tagLe } from "./mock";
 
@@ -35,7 +34,8 @@ type PropsType = {
     getAlltags: (data: any) => Promise<AxiosResponse>;
     getModulesList: (data: any) => Promise<AxiosResponse>;
     saveTree: (data: any) => Promise<AxiosResponse>;
-    importTreeData: (data: any) => Promise<AxiosResponse>;
+    updateTree: (data: any) => Promise<AxiosResponse>;
+    importTreeData: (file: File, projectId?: string) => Promise<AxiosResponse>;
     [key: string]: (data: any) => Promise<AxiosResponse>;
   };
   isCem?: boolean;
@@ -43,6 +43,7 @@ type PropsType = {
   id?: string;
   readonly?: boolean;
   title?: string;
+  router: any;
   exictPage?: () => void;
 };
 const MinderPage: React.FC<PropsType> = (props) => {
@@ -52,6 +53,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
       getAlltags,
       getModulesList,
       saveTree,
+      updateTree,
       importTreeData,
     },
     projectId,
@@ -60,13 +62,13 @@ const MinderPage: React.FC<PropsType> = (props) => {
     id,
     readonly,
     title,
+    router,
     exictPage,
   } = props;
-  console.log("ccc");
-
+  // console.log("ccc", props, router);
   const [curTitle, SetTitle] = useState(title || "未命名");
   const minderRef = useRef<any>();
-  const editTreeData = useRef<any>();
+  const editTreeData = useRef<any>({ blocks: [] });
   const [tagList, SetTagList] = useState<
     { id: number; isEnabled: boolean; text: string }[]
   >([]);
@@ -74,6 +76,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
     { label: string; value: string; [key: string]: string }[]
   >([]);
 
+  const [promptStatus, SetPromptStatus] = useState(true);
   const [treeData, SetTreeData] = useState<object>();
   const [loading, SetLoading] = useState(true);
   const [saveForm, SetSaveForm] = useState<
@@ -130,7 +133,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
         // 将此树里面用到的全局标签 指标 设为禁用状态
         const disabledTags = res.data.result.flatMap(
           (item: { id: number; isEnabled: boolean }) =>
-            item.isEnabled ? item.id : []
+            item.isEnabled ? [] : item.id
         );
         SetDisabledList(disabledTags);
       }
@@ -158,11 +161,12 @@ const MinderPage: React.FC<PropsType> = (props) => {
     minderRef.current
       .validTree()
       .then((res: any) => {
+        console.log(res, "ed", editTreeData);
         SetSaveForm({
           title: curTitle,
-          moduleIds: id
-            ? editTreeData.current.blocks.map((k: { id: number }) => k.id)
-            : [],
+          moduleIds: editTreeData.current.blocks.map(
+            (k: { id: number }) => k.id
+          ),
         });
       })
       .catch((err: any) => console.log(err, "err"));
@@ -174,15 +178,19 @@ const MinderPage: React.FC<PropsType> = (props) => {
     const { children, data } = treeData.root;
     const { moduleIds, title } = moduleForm;
     const params = {
-      businessPointId: id,
+      businessPointId: editTreeData.current.id,
       businessPointName: title,
       datas: transportdata(children),
       level: children.length ? getLevel(children) : 0,
       projectId,
       moduleIds,
+      kind: isCem ? "SELF" : "SYSTEM_DEFAULT", // 区分自定义还是系统标签、指标树
     };
     console.log(treeData, params, "save");
-    saveTree(params).then((res) => {
+
+    // 区分新增/编辑
+    const Fn = editTreeData.current.id ? updateTree : saveTree;
+    Fn(params).then((res) => {
       if (res.data.code === 20000) {
         if (title !== data.text) {
           // 树名称改变 同步显示
@@ -190,8 +198,12 @@ const MinderPage: React.FC<PropsType> = (props) => {
           SetTreeData(treeData);
           SetTitle(title);
         }
-        SetSaveForm(undefined);
+        editTreeData.current = {
+          id: res.data.result,
+          blocks: moduleIds.map((id) => ({ id })),
+        };
         message.success("保存成功");
+        SetSaveForm(undefined);
       }
     });
   };
@@ -201,10 +213,12 @@ const MinderPage: React.FC<PropsType> = (props) => {
     Modal.confirm({
       title: "修改尚未保存，是否离开？",
       icon: <ExclamationCircleOutlined />,
-      content: "离开后，已修改的指标将不会保存",
-      cancelText: "离开",
+      content: "离开后，已修改的标签将不会保存",
+      cancelText: "取消",
       okText: "确认",
       onOk() {
+        // SetPromptStatus(false);
+        // setTimeout(() => exictPage && exictPage(), 0);
         exictPage && exictPage();
       },
       onCancel() {
@@ -214,7 +228,20 @@ const MinderPage: React.FC<PropsType> = (props) => {
   };
 
   // 导入数据
-  const importData = () => {};
+  const importData = (res: any) => {
+    if (res.data.code === 20000) {
+      const editTree = {
+        root: {
+          data: {
+            text: curTitle,
+          },
+          children: transportRevertdata(res.data.result),
+        },
+      };
+      console.log("tree data ====>", editTree);
+      SetTreeData(editTree);
+    }
+  };
 
   // 导出数据 图片
   const exportData = (type: "img" | "data") => {
@@ -228,9 +255,9 @@ const MinderPage: React.FC<PropsType> = (props) => {
 
   // 增加全局指标、标签 节点
   const addGobalNode = (data: { id: number; text: string }) => {
-    console.log(selectNode, "g");
     if (readonly) return;
-    if (selectNode.length !== 1 || selectNode[0].getLevel() === 6) {
+    const selNodes = minderRef.current.getSelectNode();
+    if (selNodes.length !== 1 || selNodes[0].getLevel() === 7) {
       message.warning("请先选择一个节点");
       return;
     }
@@ -251,6 +278,12 @@ const MinderPage: React.FC<PropsType> = (props) => {
   // 同步更新不可选的全局标签 指标状态
   const disabledTagsChange = (data: number[]) => {
     SetDisabledList(data);
+  };
+
+  // 当前离开页面拦截
+  const pageWillLeave = (location: any) => {
+    exictClick();
+    return false;
   };
 
   useEffect(() => {
@@ -285,49 +318,20 @@ const MinderPage: React.FC<PropsType> = (props) => {
             zoomChange={(zoom: number) => SetZoom(zoom)}
             selectionchange={(selectNode: any[]) => SetSelectNode(selectNode)}
             disabledTagsChange={disabledTagsChange}
+            changeTitle={(text: string) => {
+              text !== curTitle && SetTitle(text);
+            }}
           />
         )}
+        <MinderTagsDraw
+          tagType={type}
+          tagList={tagList}
+          disabledList={disabledList}
+          checkTag={addGobalNode}
+          selectNode={selectNode}
+        />
+        <CommandDraw />
       </div>
-      <MinderTagsDraw
-        tagType={type}
-        tagList={tagList}
-        disabledList={disabledList}
-        checkTag={addGobalNode}
-        selectNode={selectNode}
-      />
-      <CommandDraw />
-      <SaveDialog
-        formData={saveForm}
-        modeOptions={moduleList}
-        onOK={saveTreeData}
-        onCancel={() => SetSaveForm(undefined)}
-      />
-      <BatchAdd
-        width={960}
-        title="上传标签树"
-        visible={uploadVisible}
-        failedFileUrl=""
-        templateUrl=""
-        stepsList={[
-          {
-            value: 1,
-            label: "选择表格",
-          },
-          {
-            value: 2,
-            label: "导入结果",
-          },
-        ]}
-        templateTip="（只支持xlsx格式，每次只能上传1个树结构）"
-        resultDesc={{
-          title: "导入成功",
-          subTitle: "",
-          status: "success",
-        }}
-        onCancel={() => SetuploadVisible(false)}
-        onUploadSucess={(daa) => console.log(daa, "daa")}
-        onUploadFile={importTreeData}
-      />
     </div>
   );
 };

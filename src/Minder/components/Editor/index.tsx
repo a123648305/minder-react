@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useMemo, memo } from "react";
 import { getKeyCode, isIntendToInput } from "./utils";
 import InputBox from "./InputBox";
 import { message } from "antd";
+import { debounce, throttle } from "lodash";
+import { vaildTreeRepeat } from "../../utils";
 
 type PropsType = {
   Editor: React.ReactNode | Function;
@@ -13,11 +15,11 @@ type PropsType = {
 };
 
 const EditorWrapper: React.FC<PropsType> = (props) => {
-  const { canEdit, onEdit, minder, defaultValue } = props;
-  const valueRef = useRef();
+  const { canEdit, onEdit, minder, defaultValue, tagList } = props;
   const editingNodeRef = useRef();
   const inputBoxRef = useRef<any>();
   const [initialValue, setInitialValue] = useState();
+  const [inputStyle, SetIputStyle] = useState({});
   const [editingNode, setEditingNode] = useState<{
     box: {
       height: number;
@@ -26,10 +28,6 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
       width: number;
     };
   }>();
-
-  const setEditorValue = (v: undefined) => {
-    valueRef.current = v;
-  };
 
   const setEditorEditingNode = (v?: any) => {
     editingNodeRef.current = v;
@@ -40,19 +38,36 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
     setEditorEditingNode();
     minder.focus();
   };
-  const onSubmit = (...args: any[]) => {
+  const onSubmit = (val: string) => {
+    console.log("sumbit", editingNodeRef);
     //@ts-ignore
     const { node } = editingNodeRef.current || {};
-    minder.getRoot().traverse(function (node: any) {
-      if (!node.isRoot() && node.data.text === valueRef.current) {
-        message.warning("名称不能重复");
-        inputBoxRef.current.autoFocus();
-        throw Error("名称不能重复");
-      }
-    });
+    if (!node) return;
+    message.destroy();
+    const isRepeat = tagList.find((d) => d.text === val);
+    // 与全局标签、指标重复了
+    if (isRepeat) {
+      message.warning("名称不能与全局标签重复");
+      inputBoxRef.current.autoFocus();
+      return;
+    }
+    // 与其他节点重复了
+    if (vaildTreeRepeat(minder, { text: val, nid: node.data.nid })) {
+      message.warning("名称不能重复");
+      inputBoxRef.current.autoFocus();
+      return;
+    }
 
-    if (node && (!onEdit || (onEdit && onEdit(...args) !== false))) {
-      node.setText(valueRef.current);
+    // minder.getAllNode((mnode: any) => {
+    //   if (!mnode.isRoot() && node.data.nid !== mnode.data.nid && mnode.data.text === val) {
+    //     message.warning('名称不能重复');
+    //     inputBoxRef.current.autoFocus();
+    //     throw Error('名称不能重复');
+    //   }
+    // });
+
+    if (node && (!onEdit || (onEdit && onEdit(val) !== false))) {
+      node.setText(val);
       minder.select(node, true);
       minder.fire("nodechange", { node });
       minder.fire("contentchange");
@@ -64,7 +79,10 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
 
   useEffect(() => {
     const edit = (e: any) => {
+      console.log("edit");
       if (canEdit) {
+        console.log("edit1");
+
         const node = minder.getSelectedNode();
         if (node) {
           // 全局指标 标签 禁止编辑
@@ -85,28 +103,56 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
             let value = text;
             setEditorEditingNode(editingNode);
             setInitialValue(value || defaultValue);
-            setEditorValue(value);
+            const styles = {
+              position: "absolute",
+              top: `${box.y + box.height / 2}px`,
+              left: `${box.x}px`,
+              transform: "translateY(-50%)",
+            };
+            SetIputStyle(styles);
           }
         }
       }
     };
 
     const editNodeName = "editnode";
-    const editNodeHandler = edit;
+    const editNodeHandler = debounce(edit, 500);
     const dblclickName = "dblclick";
     const dblclickHandler = edit;
     const keydownName = "keydown";
     const selectionchangeName = "selectionchange";
+    const viewChangeName = "viewchange viewchanged";
 
     const keydownHandler = (e: { originEvent: any }) => {
       if (isIntendToInput(e.originEvent) && minder.getSelectedNode()) {
         edit(e);
       }
     };
+
+    const viewChangeHandler = (e: any) => {
+      const node = minder.getSelectedNode();
+      if (node && !node.data.notAppend) {
+        const box = node
+          .getRenderer("OutlineRenderer")
+          .getRenderShape()
+          .getRenderBox("view");
+        if (box.x > 0 || box.y > 0) {
+          const styles = {
+            position: "absolute",
+            top: `${box.y + box.height / 2}px`,
+            left: `${box.x}px`,
+            transform: "translateY(-50%)",
+          };
+          SetIputStyle(styles);
+        }
+      }
+    };
+
     if (minder) {
       minder.on(editNodeName, editNodeHandler);
       minder.on(dblclickName, dblclickHandler);
       minder.on(keydownName, keydownHandler);
+      minder.on(viewChangeName, viewChangeHandler);
     }
     return () => {
       if (minder) {
@@ -114,6 +160,7 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
         minder.off(dblclickName, dblclickHandler);
         minder.off(keydownName, keydownHandler);
         minder.off(selectionchangeName);
+        minder.off(viewChangeName);
       }
     };
   }, [minder, canEdit]);
@@ -135,21 +182,15 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
   const editFunction = useMemo(
     () =>
       editingNode ? (
-        <div onClick={onSubmit}>
-          <div
-            style={{
-              position: "absolute",
-              top: `${editingNode.box.y + editingNode.box.height / 2}px`,
-              left: `${editingNode.box.x}px`,
-              transform: "translateY(-50%)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div
+          onClick={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <div style={inputStyle} onClick={(e) => e.stopPropagation()}>
             <InputBox
-              {...props}
               defaultValue={initialValue}
               onSubmit={onSubmit}
-              onChange={setEditorValue}
               onCancel={exitEdit}
               width={editingNode.box.width}
               maxLength={20}
@@ -158,7 +199,7 @@ const EditorWrapper: React.FC<PropsType> = (props) => {
           </div>
         </div>
       ) : null,
-    [minder, initialValue, editingNode]
+    [minder, initialValue, editingNode, inputStyle]
   );
   return editFunction;
 };
