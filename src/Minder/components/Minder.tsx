@@ -26,11 +26,9 @@ import {
 type PropsType = OptionsType & {
   defaultOptions?: object; //思维导图默认配置
   data: object;
-  tagList?: { id: number; isEnabled: boolean; text: string }[];
   readonly?: boolean;
   zoomChange: (zoom) => void;
   selectionchange: (selectNode) => void;
-  disabledTagsChange: (data) => void;
   changeTitle: (text: string) => void;
 };
 

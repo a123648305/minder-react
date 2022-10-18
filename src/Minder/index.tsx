@@ -3,12 +3,10 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 import MinderHeader from "./components/header";
 import MinderContainer from "./components/Minder";
-import MinderTagsDraw from "./components/tagDraw";
 import CommandDraw from "./components/commandDraw";
 import {
   getLevel,
   getUseCommand,
-  leveColors,
   transportdata,
   transportRevertdata,
 } from "./utils";
@@ -43,8 +41,6 @@ type PropsType = {
   id?: string;
   readonly?: boolean;
   title?: string;
-  router: any;
-  exictPage?: () => void;
 };
 const MinderPage: React.FC<PropsType> = (props) => {
   const {
@@ -58,25 +54,15 @@ const MinderPage: React.FC<PropsType> = (props) => {
     },
     projectId,
     isCem,
-    type,
     id,
     readonly,
     title,
-    router,
-    exictPage,
   } = props;
   // console.log("ccc", props, router);
   const [curTitle, SetTitle] = useState(title || "未命名");
   const minderRef = useRef<any>();
   const editTreeData = useRef<any>({ blocks: [] });
-  const [tagList, SetTagList] = useState<
-    { id: number; isEnabled: boolean; text: string }[]
-  >([]);
-  const [moduleList, SetModuleList] = useState<
-    { label: string; value: string; [key: string]: string }[]
-  >([]);
 
-  const [promptStatus, SetPromptStatus] = useState(true);
   const [treeData, SetTreeData] = useState<object>();
   const [loading, SetLoading] = useState(true);
   const [saveForm, SetSaveForm] = useState<
@@ -123,37 +109,6 @@ const MinderPage: React.FC<PropsType> = (props) => {
         SetLoading(false);
       }, 300);
     }
-  };
-
-  // 获取全局指标、标签
-  const fetchAllTags = () => {
-    getAlltags({ projectId, id }).then((res) => {
-      if (res.data.code === 20000) {
-        SetTagList(res.data.result);
-        // 将此树里面用到的全局标签 指标 设为禁用状态
-        const disabledTags = res.data.result.flatMap(
-          (item: { id: number; isEnabled: boolean }) =>
-            item.isEnabled ? [] : item.id
-        );
-        SetDisabledList(disabledTags);
-      }
-    });
-  };
-
-  // 获取全局绑定模块列表
-  const fetchModules = () => {
-    getModulesList({ projectId, id }).then((res) => {
-      if (res.data.code === 20000) {
-        const arr = res.data.result.length
-          ? res.data.result.map((item: { moduleName: string; id: number }) => ({
-              ...item,
-              label: item.moduleName,
-              value: item.id,
-            }))
-          : [];
-        SetModuleList(arr);
-      }
-    });
   };
 
   // 绑定模块
@@ -208,25 +163,6 @@ const MinderPage: React.FC<PropsType> = (props) => {
     });
   };
 
-  // 退出当前页面
-  const exictClick = () => {
-    Modal.confirm({
-      title: "修改尚未保存，是否离开？",
-      icon: <ExclamationCircleOutlined />,
-      content: "离开后，已修改的标签将不会保存",
-      cancelText: "取消",
-      okText: "确认",
-      onOk() {
-        // SetPromptStatus(false);
-        // setTimeout(() => exictPage && exictPage(), 0);
-        exictPage && exictPage();
-      },
-      onCancel() {
-        console.log("Cancel");
-      },
-    });
-  };
-
   // 导入数据
   const importData = (res: any) => {
     if (res.data.code === 20000) {
@@ -253,42 +189,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
     minderRef.current.editeorComand(type, val, special);
   };
 
-  // 增加全局指标、标签 节点
-  const addGobalNode = (data: { id: number; text: string }) => {
-    if (readonly) return;
-    const selNodes = minderRef.current.getSelectNode();
-    if (selNodes.length !== 1 || selNodes[0].getLevel() === 7) {
-      message.warning("请先选择一个节点");
-      return;
-    }
-
-    const { id, text } = data;
-    const obj = {
-      text,
-      id,
-      type: "GLOBAL", // GLOBAL,COMBINE
-      // background: "#f1f1f4",
-      notAppend: true, // 禁止增加子节点
-    };
-    console.log(data, "add gobal");
-    const shell = getUseCommand("插入子节点");
-    excomand(shell.minderCommand as string, obj);
-  };
-
-  // 同步更新不可选的全局标签 指标状态
-  const disabledTagsChange = (data: number[]) => {
-    SetDisabledList(data);
-  };
-
-  // 当前离开页面拦截
-  const pageWillLeave = (location: any) => {
-    exictClick();
-    return false;
-  };
-
   useEffect(() => {
-    fetchAllTags();
-    fetchModules();
     constructTree();
   }, []);
 
@@ -297,7 +198,6 @@ const MinderPage: React.FC<PropsType> = (props) => {
       <MinderHeader
         title={curTitle}
         saveStatus={false}
-        exictPage={exictClick}
         importData={() => SetuploadVisible(true)}
         saveData={bindModule}
         exportData={exportData}
@@ -313,23 +213,14 @@ const MinderPage: React.FC<PropsType> = (props) => {
           <MinderContainer
             readonly={readonly}
             data={treeData}
-            tagList={tagList}
             ref={minderRef}
             zoomChange={(zoom: number) => SetZoom(zoom)}
             selectionchange={(selectNode: any[]) => SetSelectNode(selectNode)}
-            disabledTagsChange={disabledTagsChange}
             changeTitle={(text: string) => {
               text !== curTitle && SetTitle(text);
             }}
           />
         )}
-        <MinderTagsDraw
-          tagType={type}
-          tagList={tagList}
-          disabledList={disabledList}
-          checkTag={addGobalNode}
-          selectNode={selectNode}
-        />
         <CommandDraw />
       </div>
     </div>
