@@ -6145,10 +6145,10 @@ kity@^2.0.4:
   resolved "https://registry.npmmirror.com/kity/-/kity-2.0.4.tgz#e0a3579aad705f6ec174211d88b2a4bdfee03f1e"
   integrity sha512-u6jPit9N44gPTMzB7EiX3szurI7JB6HPswJESQiS0UnrNiceOeLxGRAm0mgGRuRnkGXwmA3Pzn7hZ1rauINpOA==
 
-kityminder-core-extend@1.5.2:
-  version "1.5.2"
-  resolved "https://registry.npmmirror.com/kityminder-core-extend/-/kityminder-core-extend-1.5.2.tgz#4595760dec0aad84348319d4f6c38f1ca0703e4d"
-  integrity sha512-WOkgEuEdyA7urjopmh6iu9Ul3a0MO6ZFuxy1MVdBGunmU7yEaeApAUWsY7k9y9e412uHOEDIQJKz5Fs1qWT3Og==
+kityminder-core-pro@^1.5.15:
+  version "1.5.7"
+  resolved "https://registry.npmmirror.com/kityminder-core-pro/-/kityminder-core-pro-1.5.7.tgz#65d65d0677fed497890e0b0df033c4c1d9822097"
+  integrity sha512-r/voTw9kjv1w2H9n/5UpI4WlY8Vr5tNn0BUP4wL+egak4b+YmkkiLEx+1oHsQCHgJ/fojHR73HQCiJBh9969mg==
   dependencies:
     bower "^1.8.14"
     json-diff "^0.5.2"

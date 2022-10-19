@@ -72,6 +72,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
   const [selectNode, SetSelectNode] = useState<any[]>([]);
   const [disabledList, SetDisabledList] = useState<number[]>([]); // 不可选择的全局标签 指标
   const [uploadVisible, SetuploadVisible] = useState(false);
+  const [disabledIcons, SetDisabledIcons] = useState([]);
 
   // 获取树的数据 构造符合的结构
   const constructTree = () => {
@@ -205,6 +206,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
         zoom={zoom}
         isChecked={!!selectNode.length}
         readonly={readonly}
+        disabledIcons={disabledIcons}
       />
       <div className={styles.minder_content}>
         {loading ? (
@@ -219,6 +221,7 @@ const MinderPage: React.FC<PropsType> = (props) => {
             changeTitle={(text: string) => {
               text !== curTitle && SetTitle(text);
             }}
+            changeHistory={(e: any) => SetDisabledIcons(e)}
           />
         )}
         <CommandDraw />

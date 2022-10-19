@@ -11,6 +11,7 @@ type PropsType = {
   zoom: number;
   isChecked?: boolean;
   readonly?: boolean;
+  disabledIcons?: string[];
   importData: () => void;
   saveData: () => void;
   exportData: (type: "img" | "data") => void;
@@ -26,6 +27,7 @@ const MinderHeader: React.FC<PropsType> = ({
   excomand,
   isChecked,
   readonly,
+  disabledIcons = [],
 }) => {
   const [headerOpeatorIcon] = useState(
     getUseCommands(["撤销", "重做", "插入子节点", "插入同级节点", "删除节点"])
@@ -57,6 +59,10 @@ const MinderHeader: React.FC<PropsType> = ({
         return dom;
       };
 
+      const isOpeatorIcon = ["插入子节点", "插入同级节点", "删除节点"].includes(
+        data.label
+      );
+
       return (
         <Popover
           content={
@@ -70,16 +76,15 @@ const MinderHeader: React.FC<PropsType> = ({
         >
           <i
             className={classNames("icon", "iconfont", data.icon, {
-              [styles.comand_disabled]: readonly || !isChecked,
+              [styles.comand_disabled]:
+                readonly ||
+                disabledIcons.includes(data.minderCommand as string) ||
+                (isOpeatorIcon && !isChecked),
             })}
             onClick={() => {
               if (data.minderCommand && !readonly) {
                 // 选中了节点才给操作
-                if (
-                  ["插入子节点", "插入同级节点", "删除节点"].includes(
-                    data.label
-                  )
-                ) {
+                if (isOpeatorIcon) {
                   isChecked && excomand(data.minderCommand);
                 } else {
                   excomand(data.minderCommand);

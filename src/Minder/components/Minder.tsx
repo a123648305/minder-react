@@ -30,6 +30,7 @@ type PropsType = OptionsType & {
   zoomChange: (zoom) => void;
   selectionchange: (selectNode) => void;
   changeTitle: (text: string) => void;
+  changeHistory: (payload: any) => void;
 };
 
 const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
@@ -46,6 +47,7 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
     selectionchange,
     disabledTagsChange,
     changeTitle,
+    changeHistory,
   } = props;
   // console.log(data, ref, "ccccc");
   const kityRef = useRef(null);
@@ -226,6 +228,11 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
         selectionchange(selNode);
       });
       km.on("contentchange", (e) => {
+        // console.log(km, "eee");
+        const disabledIcons = [];
+        !km.history.hasUndo() && disabledIcons.push("undo");
+        !km.history.hasRedo() && disabledIcons.push("redo");
+        changeHistory(disabledIcons);
         const disabled = [];
         km.getRoot().traverse(function (mnode) {
           if (mnode.isRoot()) {
@@ -235,7 +242,6 @@ const Minder: React.FC<PropsType> = forwardRef((props, ref: Ref<any>) => {
             disabled.push(mnode.data.id);
           }
         });
-        disabledTagsChange(disabled);
       });
     }
     return () => {

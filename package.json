@@ -119,7 +119,7 @@
     "jest": "^27.4.3",
     "jest-resolve": "^27.4.2",
     "jest-watch-typeahead": "^1.0.0",
-    "kityminder-core-extend": "1.5.2",
+    "kityminder-core-pro": "^1.5.15",
     "less": "^4.1.3",
     "less-loader": "^11.0.0",
     "loadsh": "^0.0.4",
